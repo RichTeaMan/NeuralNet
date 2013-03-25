@@ -42,6 +42,9 @@
     <Compile Include="INet.cs" />
     <Compile Include="INode.cs" />
     <Compile Include="INodeLayer.cs" />
+    <Compile Include="Net.cs" />
+    <Compile Include="Node.cs" />
+    <Compile Include="NodeLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

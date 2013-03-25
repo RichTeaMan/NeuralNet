@@ -6,7 +6,20 @@ using System.Threading.Tasks;
 
 namespace NeuralNetLib
 {
-    interface INode
+    public interface INode
     {
+        #region Properties
+
+        int Inputs { get; }
+        double Bias { get; set;  }
+        double[] Weights { get; set; }
+
+        #endregion
+
+        #region Methods
+
+        double Calculate(double[] Inputs);
+
+        #endregion
     }
 }

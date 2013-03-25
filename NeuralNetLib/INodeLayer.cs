@@ -6,7 +6,21 @@ using System.Threading.Tasks;
 
 namespace NeuralNetLib
 {
-    interface INodeLayer
+    public interface INodeLayer
     {
+        #region Properties
+
+        INode[] Nodes { get; }
+
+        int Inputs { get; }
+        int Outputs { get; }
+
+        #endregion
+
+        #region Methods
+
+        double[] Calculate(double[] Inputs);
+
+        #endregion
     }
 }
