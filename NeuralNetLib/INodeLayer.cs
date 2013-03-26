@@ -20,6 +20,7 @@ namespace NeuralNetLib
         #region Methods
 
         double[] Calculate(double[] Inputs);
+        double[] Calculate(double[] Inputs, double[] Targets, ref double SSE);
 
         #endregion
     }

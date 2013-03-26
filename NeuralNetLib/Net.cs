@@ -48,6 +48,11 @@ namespace NeuralNetLib
             return interStep;
         }
 
+        public double[] Calculate(double[] Inputs, double[] Targets, ref double SSE)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
     }

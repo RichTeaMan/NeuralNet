@@ -57,6 +57,13 @@ namespace NeuralNetLib
             return 1 / (1 + Math.Pow(Math.E, -result));
         }
 
+        public double Calculate(double[] Inputs, double Target, ref double Error)
+        {
+            double result = Calculate(Inputs);
+            Error = result - Target;
+            return result;
+        }
+
         #endregion
     }
 }

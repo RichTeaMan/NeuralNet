@@ -45,6 +45,22 @@ namespace NeuralNetLib
             return results;
         }
 
+        public double[] Calculate(double[] Inputs, double[] Targets, ref double SSE)
+        {
+            if (this.Inputs != Inputs.Length)
+                throw new ArgumentException("There is an incorrect number of Inputs.");
+
+            SSE = 0;
+            double[] results = new double[Outputs];
+            for (int i = 0; i < Outputs; i++)
+            {
+                double error = 0;
+                results[i] = Nodes[i].Calculate(Inputs, Targets[i], ref error);
+                SSE += Math.Pow(error, 2);
+            }
+            return results;
+        }
+
         #endregion
 
     }
