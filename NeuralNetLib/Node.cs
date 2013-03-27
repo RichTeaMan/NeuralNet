@@ -53,14 +53,13 @@ namespace NeuralNetLib
             {
                 result += Inputs[i] * Weights[i];
             }
-
-            return 1 / (1 + Math.Pow(Math.E, -result));
+            return 1.0 / (1.0 + Math.Exp(-result));
         }
 
         public double Calculate(double[] Inputs, double Target, ref double Delta)
         {
             double result = Calculate(Inputs);
-            Delta = (result - Target) * result * (1 - result);
+            Delta = (Target - result) * result * (1 - result);
             return result;
         }
 

@@ -24,7 +24,7 @@ namespace NeuralNetLib
         {
             InputCount = Inputs;
             OutputCount = Outputs;
-            LearningRate = 0.5;
+            LearningRate = 0.2;
         }
 
         public void AddDataSet(double[] Inputs, double[] Outputs)
@@ -41,6 +41,16 @@ namespace NeuralNetLib
                 throw new ArgumentException("The supplied DataSet has the incorrect number of data elements.");
         }
 
+        private void AdjustNode(INode Node, double[] Inputs, double Delta)
+        {
+            Node.Bias += Delta;
+            for (int w = 0; w < Node.Inputs; w++)
+            {
+                double delta = Delta * Inputs[w];
+                Node.Weights[w] += delta;
+            }
+        }
+        
         public double Train(INode Node, int Epochs = 1000)
         {
             if (Epochs < 1)
@@ -59,17 +69,11 @@ namespace NeuralNetLib
             {
                 foreach (var dataSet in DataSets)
                 {
-                    double error = 0;
-                    double result = Node.Calculate(dataSet.Inputs, dataSet.Outputs.First(), ref error);
+                    double delta = 0;
+                    double result = Node.Calculate(dataSet.Inputs, dataSet.Outputs.First(), ref delta);
                     
                     // weight delta = learning rate * error * weight
-                    double biasDelta = LearningRate * error;
-                    Node.Bias += biasDelta;
-                    for (int w = 0; w < Node.Inputs; w++)
-                    {
-                        double delta = biasDelta * Node.Weights[w];
-                        Node.Weights[w] += delta;
-                    }
+                    AdjustNode(Node, dataSet.Inputs, LearningRate * delta);
                     
                 }
             }
@@ -77,21 +81,54 @@ namespace NeuralNetLib
             double SSE = 0;
             foreach (var dataSet in DataSets)
             {
+                double result = Node.Calculate(dataSet.Inputs);
+                SSE += Math.Pow(dataSet.Outputs.First() - result, 2);
+            }
+            return SSE;
+        }
+
+        public double Train(INodeLayer NodeLayer, int Epochs = 1000)
+        {
+            if (Epochs < 1)
+                throw new ArgumentException("At least 1 epoch is required.");
+
+            if (DataSets.Length < 1)
+                throw new ArgumentException("No DataSets have been loaded.");
+
+            if (InputCount != NodeLayer.Inputs)
+                throw new ArgumentException("The given INodeLayer does not have the same number of Inputs as the DataSets.");
+
+            if (OutputCount != NodeLayer.Outputs)
+                throw new ArgumentException("The given INodeLayer does not have the same number of Outputs as the DataSets.");
+
+            for (int i = 0; i < Epochs; i++)
+            {
+                for (int n = 0; n < NodeLayer.Outputs; n++)
+                {
+                    foreach(var dataSet in DataSets)
+                    {
+                        double error = 0;
+                        NodeLayer.Nodes[n].Calculate(dataSet.Inputs, dataSet.Outputs[n], ref error);
+
+                        double delta = error * LearningRate;
+                        AdjustNode(NodeLayer.Nodes[n], dataSet.Inputs, delta);
+                    }
+                }
+            }
+
+            double SSE = 0;
+            foreach (var dataSet in DataSets)
+            {
                 double error = 0;
-                double result = Node.Calculate(dataSet.Inputs, dataSet.Outputs.First(), ref error);
+                NodeLayer.Calculate(dataSet.Inputs, dataSet.Outputs, ref error);
                 SSE += Math.Pow(error, 2);
             }
             return SSE;
         }
 
-        public void Train(INodeLayer Node, int Epochs = 1000)
+        public double Train(INet Net, int Epochs = 1000)
         {
-
-        }
-
-        public void Train(INet Node, int Epochs = 1000)
-        {
-
+            throw new NotImplementedException();
         }
 
     }

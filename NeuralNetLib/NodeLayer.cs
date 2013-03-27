@@ -26,7 +26,7 @@ namespace NeuralNetLib
             this.Inputs = Inputs;
             
             Nodes = new Node[Outputs];
-            for (int i = 0; i < Inputs; i++)
+            for (int i = 0; i < Outputs; i++)
             {
                 Nodes[i] = new Node(Inputs);
             }
