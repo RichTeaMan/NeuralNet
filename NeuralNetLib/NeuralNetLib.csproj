@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BackPropagation.cs" />
+    <Compile Include="DataSet.cs" />
     <Compile Include="INet.cs" />
     <Compile Include="INode.cs" />
     <Compile Include="INodeLayer.cs" />

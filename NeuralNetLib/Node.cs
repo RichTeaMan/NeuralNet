@@ -57,10 +57,10 @@ namespace NeuralNetLib
             return 1 / (1 + Math.Pow(Math.E, -result));
         }
 
-        public double Calculate(double[] Inputs, double Target, ref double Error)
+        public double Calculate(double[] Inputs, double Target, ref double Delta)
         {
             double result = Calculate(Inputs);
-            Error = result - Target;
+            Delta = (result - Target) * result * (1 - result);
             return result;
         }
 

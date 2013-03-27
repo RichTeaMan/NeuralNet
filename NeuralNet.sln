@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetLib", "NeuralNetLib\NeuralNetLib.csproj", "{3A1B6CF5-DEF0-4C8F-88F8-29C4BD124B2F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetLibTest", "NeuralNetLibTest\NeuralNetLibTest.csproj", "{825F9094-1060-4599-94D6-C2A9911ABD9C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{3A1B6CF5-DEF0-4C8F-88F8-29C4BD124B2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A1B6CF5-DEF0-4C8F-88F8-29C4BD124B2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A1B6CF5-DEF0-4C8F-88F8-29C4BD124B2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{825F9094-1060-4599-94D6-C2A9911ABD9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{825F9094-1060-4599-94D6-C2A9911ABD9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{825F9094-1060-4599-94D6-C2A9911ABD9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{825F9094-1060-4599-94D6-C2A9911ABD9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
