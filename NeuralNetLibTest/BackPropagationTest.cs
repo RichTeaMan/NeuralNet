@@ -147,5 +147,93 @@ namespace NeuralNetLibTest
 
             Assert.IsTrue(SSE < 0.2, "LogicNodeANDOR SSE after {0} epochs is '{1}'", epoch, SSE);
         }
+
+        [TestMethod]
+        public void LogicNetOR()
+        {
+            INet Net = new Net(2, 1);
+
+            BackPropagation prop = new BackPropagation(2, 1);
+            DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
+            DataSet _2 = new DataSet(new double[] { 0, 1 }, new double[] { 1 });    // 0 | 1 = 1
+            DataSet _3 = new DataSet(new double[] { 1, 0 }, new double[] { 1 });    // 1 | 0 = 1
+            DataSet _4 = new DataSet(new double[] { 1, 1 }, new double[] { 1 });    // 1 | 1 = 1
+
+            prop.AddDataSet(_1);
+            prop.AddDataSet(_2);
+            prop.AddDataSet(_3);
+            prop.AddDataSet(_4);
+
+            int epoch = 1000;
+            double SSE = prop.Train(Net, epoch);
+
+            Assert.IsTrue(SSE < 0.2, "LogicNetOR SSE after {0} epochs is '{1}'", epoch, SSE);
+        }
+
+        [TestMethod]
+        public void LogicNetAND()
+        {
+            INet Net = new Net(2, 1);
+
+            BackPropagation prop = new BackPropagation(2, 1);
+            DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
+            DataSet _2 = new DataSet(new double[] { 0, 1 }, new double[] { 0 });    // 0 | 1 = 0
+            DataSet _3 = new DataSet(new double[] { 1, 0 }, new double[] { 0 });    // 1 | 0 = 0
+            DataSet _4 = new DataSet(new double[] { 1, 1 }, new double[] { 1 });    // 1 | 1 = 1
+
+            prop.AddDataSet(_1);
+            prop.AddDataSet(_2);
+            prop.AddDataSet(_3);
+            prop.AddDataSet(_4);
+
+            int epoch = 1000;
+            double SSE = prop.Train(Net, epoch);
+
+            Assert.IsTrue(SSE < 0.2, "LogicNetAND SSE after {0} epochs is '{1}'", epoch, SSE);
+        }
+
+        [TestMethod]
+        public void LogicNetXOR()
+        {
+            INet Net = new Net(2, 1);
+
+            BackPropagation prop = new BackPropagation(2, 1);
+            DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
+            DataSet _2 = new DataSet(new double[] { 0, 1 }, new double[] { 1 });    // 0 | 1 = 1
+            DataSet _3 = new DataSet(new double[] { 1, 0 }, new double[] { 1 });    // 1 | 0 = 1
+            DataSet _4 = new DataSet(new double[] { 1, 1 }, new double[] { 0 });    // 1 | 1 = 0
+
+            prop.AddDataSet(_1);
+            prop.AddDataSet(_2);
+            prop.AddDataSet(_3);
+            prop.AddDataSet(_4);
+
+            int epoch = 1000;
+            double SSE = prop.Train(Net, epoch);
+
+            Assert.IsTrue(SSE < 0.2, "LogicNetXOR SSE after {0} epochs is '{1}'", epoch, SSE);
+        }
+
+        [TestMethod]
+        public void LogicNetANDORXOR()
+        {
+            INet Net = new Net(2, 2);
+
+            BackPropagation prop = new BackPropagation(2, 3);
+            DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0, 0, 0 });    // 0 | 0 = 000
+            DataSet _2 = new DataSet(new double[] { 0, 1 }, new double[] { 0, 1, 1 });    // 0 | 1 = 011
+            DataSet _3 = new DataSet(new double[] { 1, 0 }, new double[] { 0, 1, 1 });    // 1 | 0 = 011
+            DataSet _4 = new DataSet(new double[] { 1, 1 }, new double[] { 1, 1, 0 });    // 1 | 1 = 110
+
+            prop.AddDataSet(_1);
+            prop.AddDataSet(_2);
+            prop.AddDataSet(_3);
+            prop.AddDataSet(_4);
+
+            int epoch = 1000;
+            double SSE = prop.Train(Net, epoch);
+
+            Assert.IsTrue(SSE < 0.2, "LogicNetANDORXOR SSE after {0} epochs is '{1}'", epoch, SSE);
+        }
     }
 }
