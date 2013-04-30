@@ -23,6 +23,12 @@ namespace NeuralNetLib
 
         public NodeLayer(int Inputs, int Outputs)
         {
+            if (Inputs == 0)
+                throw new ArgumentException("A NodeLayer must have at least one input");
+
+            if (Outputs == 0)
+                throw new ArgumentException("A NodeLayer must have at least one output");
+
             this.Inputs = Inputs;
             
             Nodes = new Node[Outputs];

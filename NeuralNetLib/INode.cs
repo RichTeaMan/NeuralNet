@@ -13,6 +13,7 @@ namespace NeuralNetLib
         int Inputs { get; }
         double Bias { get; set;  }
         double[] Weights { get; set; }
+        double Result { get; }
 
         #endregion
 

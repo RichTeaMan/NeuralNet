@@ -21,6 +21,11 @@ namespace NeuralNetLib
         public double Bias { get; set; }
         public double[] Weights { get; set; }
 
+        /// <summary>
+        /// Gets the result of the last calculation.
+        /// </summary>
+        public double Result { get; private set; }
+
         #endregion
 
         #region Methods
@@ -31,6 +36,9 @@ namespace NeuralNetLib
         /// <param name="Inputs">The number of inputs the Node should have.</param>
         public Node(int Inputs)
         {
+            if (Inputs == 0)
+                throw new ArgumentException("A NodeLayer must have at least one input");
+
             Random rand = new Random();
 
             Bias = rand.NextDouble();
@@ -53,7 +61,8 @@ namespace NeuralNetLib
             {
                 result += Inputs[i] * Weights[i];
             }
-            return 1.0 / (1.0 + Math.Exp(-result));
+            Result = 1.0 / (1.0 + Math.Exp(-result));
+            return Result;
         }
 
         public double Calculate(double[] Inputs, double Target, ref double Delta)

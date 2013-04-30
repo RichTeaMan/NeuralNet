@@ -128,7 +128,61 @@ namespace NeuralNetLib
 
         public double Train(INet Net, int Epochs = 1000)
         {
-            throw new NotImplementedException();
+            Dictionary<INode, double> deltas = new Dictionary<INode,double>();
+            foreach(var nodeLayer in Net.NodeLayers)
+            {
+                foreach(var node in nodeLayer.Nodes)
+                {
+                    deltas.Add(node, 0.0);
+                }
+            }
+
+            for (int i = 0; i < Epochs; i++)
+            {
+                foreach (var dataSet in DataSets)
+                {
+                    double error = 0;
+                    var results = Net.Calculate(dataSet.Inputs, dataSet.Outputs, ref error);
+
+                    // set delta of output nodes
+                    for(int r = 0; r < results.Length; r++)
+                    {
+                        double delta = (dataSet.Outputs[r] - results[r]) * results[r] * (1 - results[r]);
+                        deltas[Net.NodeLayers.Last().Nodes[r]] = delta;
+                    }
+
+                    for(int l = Net.NodeLayers.Length - 2; l >= 0; l--)
+                    {
+                        for(int l2 = 0; l2 < Net.NodeLayers[l].Nodes.Length; l2++)
+                        {
+                            var node = Net.NodeLayers[l].Nodes[l2];
+                            double delta = 0;
+                            foreach(var linkedNode in Net.NodeLayers[l+1].Nodes)
+                            {
+                                // add delta * weight of that node
+                                delta += node.Result * (1 - node.Result) * linkedNode.Weights[l2] * deltas[linkedNode];
+                                
+                            }
+                            // save delta for other nodes
+                            deltas[node] = delta;
+
+                        }
+                    }
+                    foreach (var delta in deltas)
+                    {
+                        AdjustNode(delta.Key, dataSet.Inputs, delta.Value);
+                    }
+                }
+            }
+
+            double SSE = 0;
+            foreach (var dataSet in DataSets)
+            {
+                double error = 0;
+                var result = Net.Calculate(dataSet.Inputs, dataSet.Outputs, ref error);
+                SSE += error;
+            }
+            return SSE;
         }
 
     }
