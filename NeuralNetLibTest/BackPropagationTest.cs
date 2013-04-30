@@ -217,7 +217,7 @@ namespace NeuralNetLibTest
         [TestMethod]
         public void LogicNetANDORXOR()
         {
-            INet Net = new Net(2, 2);
+            INet Net = new Net(2, 3);
 
             BackPropagation prop = new BackPropagation(2, 3);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0, 0, 0 });    // 0 | 0 = 000
