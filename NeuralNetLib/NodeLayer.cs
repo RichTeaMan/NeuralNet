@@ -84,7 +84,7 @@ namespace NeuralNetLib
                 throw new ArgumentException("NodeLayer has incorrect number of outputs.");
             }
 
-            for (int i = 0; i < Inputs; i++)
+            for (int i = 0; i < Nodes.Length; i++)
             {
                 Nodes[i].SeedWeights(nodeLayer.Nodes[i]);
             }

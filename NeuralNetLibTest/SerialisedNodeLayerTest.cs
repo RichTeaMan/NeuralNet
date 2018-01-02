@@ -44,6 +44,19 @@ namespace NeuralNetLibTest
         }
 
         [TestMethod]
+        public void NodeLayerSeedWeightsTest()
+        {
+            var rand = new Random(5);
+            var a = new NodeLayer(3, 1);
+            var b = new NodeLayer(3, 1);
+
+            a.SeedWeights(rand);
+            b.SeedWeights(a);
+
+            Assert.AreEqual(a.CreateSerialisedNodeLayer(), b.CreateSerialisedNodeLayer());
+        }
+
+        [TestMethod]
         public void SeededNodeLayerNotEqualsTest()
         {
             var rand = new Random(5);

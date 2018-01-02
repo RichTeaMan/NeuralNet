@@ -57,6 +57,19 @@ namespace NeuralNetLibTest
         }
 
         [TestMethod]
+        public void NetSeedWeightsTest()
+        {
+            var rand = new Random(5);
+            var a = new Net(3, 1);
+            var b = new Net(3, 1);
+
+            a.SeedWeights(rand);
+            b.SeedWeights(a);
+
+            Assert.AreEqual(a.CreateSerialisedNet(), b.CreateSerialisedNet());
+        }
+
+        [TestMethod]
         public void DeserialisedNetTest()
         {
             double[] node1AWeights = new[] { 0.2, 0.9 };
