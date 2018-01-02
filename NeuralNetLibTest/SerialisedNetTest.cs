@@ -60,8 +60,8 @@ namespace NeuralNetLibTest
         public void NetSeedWeightsTest()
         {
             var rand = new Random(5);
-            var a = new Net(3, 1);
-            var b = new Net(3, 1);
+            var a = new Net(6, 1);
+            var b = new Net(6, 1);
 
             a.SeedWeights(rand);
             b.SeedWeights(a);
