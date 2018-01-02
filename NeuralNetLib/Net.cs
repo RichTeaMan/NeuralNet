@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeuralNetLib.Serialisation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -40,12 +41,35 @@ namespace NeuralNetLib
             NodeLayers[layers - 1] = new NodeLayer(inputs, outputs);
         }
 
+        public Net(IEnumerable<NodeLayer> nodeLayers)
+        {
+            if (nodeLayers.Count() < 2)
+            {
+                throw new ArgumentException("There must be at least 2 layers.");
+            }
+
+            Inputs = nodeLayers.First().Inputs;
+            Outputs = nodeLayers.Last().Outputs;
+
+            NodeLayers = nodeLayers.ToArray();
+        }
+
         public void SeedWeights(Random random)
         {
             foreach (var nodeLayer in NodeLayers)
             {
                 nodeLayer.SeedWeights(random);
             }
+        }
+
+        public SerialisedNet CreateSerialisedNet()
+        {
+            var serialisedNodeLayers = NodeLayers.Select(n => n.CreateSerialisedNodeLayer()).ToArray();
+            var serialisedNet = new SerialisedNet
+            {
+                NodeLayers = serialisedNodeLayers
+            };
+            return serialisedNet;
         }
 
         public void SeedWeights(Net net)
