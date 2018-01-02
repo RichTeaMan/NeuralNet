@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeuralNetLib.Serialisation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -86,6 +87,17 @@ namespace NeuralNetLib
             double result = Calculate(inputs);
             delta = (target - result) * result * (1 - result);
             return result;
+        }
+
+        public SerialisedNode CreateSerialisedNode()
+        {
+            var serialisedNode = new SerialisedNode
+            {
+                Bias = Bias,
+                Weights = Weights
+            };
+
+            return serialisedNode;
         }
 
         #endregion

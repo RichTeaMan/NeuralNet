@@ -16,4 +16,8 @@
     <OutputPath>bin\Release</OutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="RichTea.Common" Version="0.5.0-beta" />
+  </ItemGroup>
+
 </Project>
