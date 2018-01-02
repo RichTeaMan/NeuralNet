@@ -13,4 +13,4 @@ This project uses [Cake](https://cakebuild.net)!
 
 |        | Windows |
 | ------ | --------|
-| Master | [![Build status](https://ci.appveyor.com/api/github/webhook?id=gg1vktipvhjcmknd/branch/master?svg=true)](https://ci.appveyor.com/project/RichTeaMan/neuralnet/branch/master) |
+| Master | [![Build status](https://ci.appveyor.com/api/projects/status/gy1oqhk2mmi9v6qf/branch/master?svg=true)](https://ci.appveyor.com/project/RichTeaMan/neuralnet/branch/master) |
