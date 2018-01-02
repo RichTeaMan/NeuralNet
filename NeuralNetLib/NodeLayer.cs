@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace NeuralNetLib
 {
-    public class NodeLayer : INodeLayer
+    public class NodeLayer
     {
         #region Properties
 
-        public INode[] Nodes { get; private set;  }
+        public Node[] Nodes { get; private set;  }
         public int Inputs { get; private set; }
         public int Outputs
         {
@@ -21,48 +21,81 @@ namespace NeuralNetLib
 
         #region Methods
 
-        public NodeLayer(int Inputs, int Outputs)
+        public NodeLayer(int inputs, int outputs)
         {
-            if (Inputs == 0)
-                throw new ArgumentException("A NodeLayer must have at least one input");
-
-            if (Outputs == 0)
-                throw new ArgumentException("A NodeLayer must have at least one output");
-
-            this.Inputs = Inputs;
-            
-            Nodes = new Node[Outputs];
-            for (int i = 0; i < Outputs; i++)
+            if (inputs == 0)
             {
-                Nodes[i] = new Node(Inputs);
+                throw new ArgumentException("A NodeLayer must have at least one input");
+            }
+
+            if (outputs == 0)
+            {
+                throw new ArgumentException("A NodeLayer must have at least one output");
+            }
+
+            Inputs = inputs;
+
+            Nodes = new Node[outputs];
+            for (int i = 0; i < outputs; i++)
+            {
+                Nodes[i] = new Node(inputs);
             }
         }
 
-        public double[] Calculate(double[] Inputs)
+        public void SeedWeights(Random random)
         {
-            if (this.Inputs != Inputs.Length)
+            foreach(var node in Nodes)
+            {
+                node.SeedWeights(random);
+            }
+        }
+
+        public void SeedWeights(NodeLayer nodeLayer)
+        {
+            if (nodeLayer.Inputs != Inputs)
+            {
+                throw new ArgumentException("NodeLayer has incorrect number of inputs.");
+            }
+            if (nodeLayer.Outputs != Outputs)
+            {
+                throw new ArgumentException("NodeLayer has incorrect number of outputs.");
+            }
+
+            for (int i = 0; i < Inputs; i++)
+            {
+                Nodes[i].SeedWeights(nodeLayer.Nodes[i]);
+            }
+        }
+
+        public double[] Calculate(double[] inputs)
+        {
+            if (Inputs != inputs.Length)
+            {
                 throw new ArgumentException("There is an incorrect number of Inputs.");
+            }
 
             double[] results = new double[Outputs];
             for (int i = 0; i < Outputs; i++)
             {
-                results[i] = Nodes[i].Calculate(Inputs);
+                results[i] = Nodes[i].Calculate(inputs);
             }
             return results;
         }
 
-        public double[] Calculate(double[] Inputs, double[] Targets, ref double SSE)
+        public double[] Calculate(double[] inputs, double[] targets, ref double sse)
         {
-            if (this.Inputs != Inputs.Length)
+            if (Inputs != inputs.Length)
+            {
                 throw new ArgumentException("There is an incorrect number of Inputs.");
+            }
 
-            SSE = 0;
+            sse = 0;
             double[] results = new double[Outputs];
             for (int i = 0; i < Outputs; i++)
             {
                 double error = 0;
-                results[i] = Nodes[i].Calculate(Inputs, Targets[i], ref error);
-                SSE += Math.Pow(error, 2);
+                results[i] = Nodes[i].Calculate(inputs, targets[i], ref error);
+                sse += Math.Pow(error, 2);
             }
             return results;
         }

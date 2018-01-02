@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace NeuralNetLib
 {
-    public class Net : INet
+    public class Net
     {
         #region Properties
 
-        public INodeLayer[] NodeLayers { get; private set; }
+        public NodeLayer[] NodeLayers { get; private set; }
         public int Inputs { get; private set; }
         public int Outputs { get; private set; }
         public int Layers
@@ -22,28 +22,57 @@ namespace NeuralNetLib
 
         #region Methods
 
-        public Net(int Inputs, int Outputs, int Layers = 3)
+        public Net(int inputs, int outputs, int layers = 3)
         {
-            if (Layers < 2)
-                throw new ArgumentException("There must be at least 2 layers.");
-
-            this.Inputs = Inputs;
-            this.Outputs = Outputs;
-
-            NodeLayers = new NodeLayer[Layers];
-            for (int i = 0; i < Layers - 1; i++)
+            if (layers < 2)
             {
-                NodeLayers[i] = new NodeLayer(Inputs, Inputs);
+                throw new ArgumentException("There must be at least 2 layers.");
             }
-            NodeLayers[Layers - 1] = new NodeLayer(Inputs, Outputs);
+
+            Inputs = inputs;
+            Outputs = outputs;
+
+            NodeLayers = new NodeLayer[layers];
+            for (int i = 0; i < layers - 1; i++)
+            {
+                NodeLayers[i] = new NodeLayer(inputs, inputs);
+            }
+            NodeLayers[layers - 1] = new NodeLayer(inputs, outputs);
         }
 
-        public double[] Calculate(double[] Inputs)
+        public void SeedWeights(Random random)
         {
-            if (this.Inputs != Inputs.Length)
-                throw new ArgumentException("There is an incorrect number of Inputs.");
+            foreach (var nodeLayer in NodeLayers)
+            {
+                nodeLayer.SeedWeights(random);
+            }
+        }
 
-            double[] interStep = Inputs;
+        public void SeedWeights(Net net)
+        {
+            if (net.Inputs != Inputs)
+            {
+                throw new ArgumentException("Net has incorrect number of inputs.");
+            }
+            if (net.Outputs != Outputs)
+            {
+                throw new ArgumentException("Net has incorrect number of outputs.");
+            }
+
+            for (int i = 0; i < Inputs; i++)
+            {
+                NodeLayers[i].SeedWeights(net.NodeLayers[i]);
+            }
+        }
+
+        public double[] Calculate(double[] inputs)
+        {
+            if (Inputs != inputs.Length)
+            {
+                throw new ArgumentException("There is an incorrect number of Inputs.");
+            }
+
+            double[] interStep = inputs;
             foreach (var layer in NodeLayers)
             {
                 interStep = layer.Calculate(interStep);
@@ -51,18 +80,20 @@ namespace NeuralNetLib
             return interStep;
         }
 
-        public double[] Calculate(double[] Inputs, double[] Targets, ref double SSE)
+        public double[] Calculate(double[] inputs, double[] targets, ref double sse)
         {
-            if(Targets.Length != Outputs)
+            if (targets.Length != Outputs)
+            {
                 throw new ArgumentException("There is an incorrect number of Targets.");
+            }
 
-            var results = Calculate(Inputs);
+            var results = Calculate(inputs);
 
-            SSE = 0;
+            sse = 0;
             for (int i = 0; i < results.Length; i++)
             {
-                double error = Targets[i] - results[i];
-                SSE += Math.Pow(error, 2);
+                double error = targets[i] - results[i];
+                sse += Math.Pow(error, 2);
             }
 
             return results;

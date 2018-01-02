@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NeuralNetLib
 {
-    public class Node : INode
+    public class Node
     {
         #region Properties
 
@@ -33,42 +33,58 @@ namespace NeuralNetLib
         /// <summary>
         /// Constructs the node with random values for the weights and bias.
         /// </summary>
-        /// <param name="Inputs">The number of inputs the Node should have.</param>
-        public Node(int Inputs)
+        /// <param name="inputs">The number of inputs the Node should have.</param>
+        public Node(int inputs)
         {
-            if (Inputs == 0)
+            if (inputs == 0)
+            {
                 throw new ArgumentException("A NodeLayer must have at least one input");
+            }
 
-            Random rand = new Random();
+            Weights = new double[inputs];
+        }
 
-            Bias = rand.NextDouble();
+        public void SeedWeights(Random random)
+        {
+            Bias = random.NextDouble();
 
-            Weights = new double[Inputs];
             for (int i = 0; i < Inputs; i++)
             {
-                Weights[i] = rand.NextDouble();
+                Weights[i] = random.NextDouble();
             }
         }
 
-        public double Calculate(double[] Inputs)
+        public void SeedWeights(Node node)
         {
-            if (this.Inputs != Inputs.Length)
-                throw new ArgumentException("There is not a correct number of inputs.");
+            if (node.Inputs != Inputs)
+            {
+                throw new ArgumentException("Node has incorrect number of inputs.");
+            }
 
+            Bias = node.Bias;
+            Weights = node.Weights;
+        }
+
+        public double Calculate(double[] inputs)
+        {
+            if (Inputs != inputs.Length)
+            {
+                throw new ArgumentException("There is not a correct number of inputs.");
+            }
 
             double result = Bias;
             for (int i = 0; i < this.Inputs; i++)
             {
-                result += Inputs[i] * Weights[i];
+                result += inputs[i] * Weights[i];
             }
             Result = 1.0 / (1.0 + Math.Exp(-result));
             return Result;
         }
 
-        public double Calculate(double[] Inputs, double Target, ref double Delta)
+        public double Calculate(double[] inputs, double target, ref double delta)
         {
-            double result = Calculate(Inputs);
-            Delta = (Target - result) * result * (1 - result);
+            double result = Calculate(inputs);
+            delta = (target - result) * result * (1 - result);
             return result;
         }
 

@@ -10,7 +10,7 @@ namespace NeuralNetLibTest
         [TestMethod]
         public void LogicNodeOR()
         {
-            INode node = new Node(2);
+            Node node = new Node(2);
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -41,7 +41,7 @@ namespace NeuralNetLibTest
         [TestMethod]
         public void LogicNodeAND()
         {
-            INode node = new Node(2);
+            Node node = new Node(2);
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -63,7 +63,7 @@ namespace NeuralNetLibTest
         [TestMethod]
         public void LogicNodeXOR()
         {
-            INode node = new Node(2);
+            Node node = new Node(2);
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -85,7 +85,7 @@ namespace NeuralNetLibTest
         [TestMethod]
         public void LogicNodeLayerOR()
         {
-            INodeLayer NodeLayer = new NodeLayer(2, 1);
+            NodeLayer NodeLayer = new NodeLayer(2, 1);
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -107,7 +107,7 @@ namespace NeuralNetLibTest
         [TestMethod]
         public void LogicNodeLayerAND()
         {
-            INodeLayer NodeLayer = new NodeLayer(2, 1);
+            NodeLayer NodeLayer = new NodeLayer(2, 1);
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -129,7 +129,7 @@ namespace NeuralNetLibTest
         [TestMethod]
         public void LogicNodeLayerANDOR()
         {
-            INodeLayer NodeLayer = new NodeLayer(2, 2);
+            NodeLayer NodeLayer = new NodeLayer(2, 2);
 
             BackPropagation prop = new BackPropagation(2, 2);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0, 0 });    // 0 | 0 = 00
@@ -151,7 +151,7 @@ namespace NeuralNetLibTest
         [TestMethod]
         public void LogicNetOR()
         {
-            INet Net = new Net(2, 1);
+            Net Net = new Net(2, 1);
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -173,7 +173,7 @@ namespace NeuralNetLibTest
         [TestMethod]
         public void LogicNetAND()
         {
-            INet Net = new Net(2, 1);
+            Net Net = new Net(2, 1);
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -195,7 +195,7 @@ namespace NeuralNetLibTest
         [TestMethod]
         public void LogicNetXOR()
         {
-            INet Net = new Net(2, 1);
+            Net Net = new Net(2, 1);
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -217,7 +217,7 @@ namespace NeuralNetLibTest
         [TestMethod]
         public void LogicNetANDORXOR()
         {
-            INet Net = new Net(2, 3);
+            Net Net = new Net(2, 3);
 
             BackPropagation prop = new BackPropagation(2, 3);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0, 0, 0 });    // 0 | 0 = 000

@@ -41,7 +41,7 @@ namespace NeuralNetLib
                 throw new ArgumentException("The supplied DataSet has the incorrect number of data elements.");
         }
 
-        private void AdjustNode(INode Node, double[] Inputs, double Delta)
+        private void AdjustNode(Node Node, double[] Inputs, double Delta)
         {
             Node.Bias += Delta;
             for (int w = 0; w < Node.Inputs; w++)
@@ -51,7 +51,7 @@ namespace NeuralNetLib
             }
         }
         
-        public double Train(INode Node, int Epochs = 1000)
+        public double Train(Node Node, int Epochs = 1000)
         {
             if (Epochs < 1)
                 throw new ArgumentException("At least 1 epoch is required.");
@@ -87,7 +87,7 @@ namespace NeuralNetLib
             return SSE;
         }
 
-        public double Train(INodeLayer NodeLayer, int Epochs = 1000)
+        public double Train(NodeLayer NodeLayer, int Epochs = 1000)
         {
             if (Epochs < 1)
                 throw new ArgumentException("At least 1 epoch is required.");
@@ -126,9 +126,9 @@ namespace NeuralNetLib
             return SSE;
         }
 
-        public double Train(INet Net, int Epochs = 1000)
+        public double Train(Net Net, int Epochs = 1000)
         {
-            Dictionary<INode, double> deltas = new Dictionary<INode,double>();
+            Dictionary<Node, double> deltas = new Dictionary<Node,double>();
             foreach(var nodeLayer in Net.NodeLayers)
             {
                 foreach(var node in nodeLayer.Nodes)
