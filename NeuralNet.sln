@@ -1,9 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetLib", "NeuralNetLib\NeuralNetLib.csproj", "{3A1B6CF5-DEF0-4C8F-88F8-29C4BD124B2F}"
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeuralNetLib", "NeuralNetLib\NeuralNetLib.csproj", "{3A1B6CF5-DEF0-4C8F-88F8-29C4BD124B2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetLibTest", "NeuralNetLibTest\NeuralNetLibTest.csproj", "{825F9094-1060-4599-94D6-C2A9911ABD9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeuralNetLibTest", "NeuralNetLibTest\NeuralNetLibTest.csproj", "{825F9094-1060-4599-94D6-C2A9911ABD9C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E4220C8C-0C6D-4075-A49A-471977422C0B}"
+	ProjectSection(SolutionItems) = preProject
+		build.cake = build.cake
+		build.ps1 = build.ps1
+		license.txt = license.txt
+		readme.md = readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,5 +32,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {59DEBA1F-F560-4DD1-A248-A7CA8106C841}
 	EndGlobalSection
 EndGlobal
