@@ -1,4 +1,4 @@
-﻿using Common;
+﻿using RichTea.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace NeuralNetLib.Serialisation
             return new EqualsBuilder<SerialisedNode>(this, that)
                 .Append(p => p.Bias)
                 .Append(p => p.Weights)
-                .Equals();
+                .AreEqual;
         }
 
         public override int GetHashCode()
