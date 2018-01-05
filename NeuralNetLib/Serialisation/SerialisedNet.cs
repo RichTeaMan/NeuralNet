@@ -36,7 +36,7 @@ namespace NeuralNetLib.Serialisation
         public override int GetHashCode()
         {
             return new HashCodeBuilder<SerialisedNet>(this)
-                .Append(p => p.NodeLayers)
+                .Append(NodeLayers)
                 .HashCode;
         }
     }

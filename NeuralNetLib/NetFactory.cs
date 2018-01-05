@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RichTea.Common.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,10 +46,10 @@ namespace NeuralNetLib
             {
                 foreach(var node in nodeLayer.Nodes)
                 {
-                    node.Bias += random.NextDouble(deviation);
+                    node.Bias += random.NextDoubleInRange(deviation);
                     for(int i = 0; i < node.Weights.Length; i++)
                     {
-                        node.Weights[i] += random.NextDouble(deviation);
+                        node.Weights[i] += random.NextDoubleInRange(deviation);
                     }
                 }
             }

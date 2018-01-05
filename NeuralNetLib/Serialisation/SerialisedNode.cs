@@ -41,8 +41,8 @@ namespace NeuralNetLib.Serialisation
         public override int GetHashCode()
         {
             return new HashCodeBuilder<SerialisedNode>(this)
-                .Append(p => p.Bias)
-                .Append(p => p.Weights)
+                .Append(Bias)
+                .Append(Weights)
                 .HashCode;
         }
     }
