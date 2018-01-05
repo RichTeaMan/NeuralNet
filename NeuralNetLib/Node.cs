@@ -63,7 +63,8 @@ namespace RichTea.NeuralNetLib
             }
 
             Bias = node.Bias;
-            Weights = node.Weights;
+            // ToArray() to ensure the same array instance is not reused.
+            Weights = node.Weights.ToArray();
         }
 
         public double Calculate(double[] inputs)

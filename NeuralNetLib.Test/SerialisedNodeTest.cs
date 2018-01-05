@@ -38,6 +38,10 @@ namespace RichTea.NeuralNetLib.Test
             b.SeedWeights(randB);
 
             Assert.AreEqual(a.CreateSerialisedNode(), b.CreateSerialisedNode());
+
+            // Ensure weight arrays eqivalent but not the same reference.
+            CollectionAssert.AreEquivalent(a.Weights, b.Weights);
+            ReferenceEquals(a.Weights, b.Weights);
         }
 
         [TestMethod]

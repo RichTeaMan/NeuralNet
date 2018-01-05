@@ -40,10 +40,11 @@ namespace RichTea.NeuralNetLib.Serialisation
 
         public override int GetHashCode()
         {
-            return new HashCodeBuilder<SerialisedNode>(this)
+            var hash = new HashCodeBuilder<SerialisedNode>(this)
                 .Append(Bias)
                 .Append(Weights)
                 .HashCode;
+            return hash;
         }
     }
 }
