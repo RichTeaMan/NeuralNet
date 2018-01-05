@@ -44,7 +44,7 @@ Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    DotNetCoreTest("NeuralNetLibTest/NeuralNetLibTest.csproj");
+    DotNetCoreTest("NeuralNetLib.Test/NeuralNetLib.Test.csproj");
 });
 
 //////////////////////////////////////////////////////////////////////

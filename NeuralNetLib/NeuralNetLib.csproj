@@ -18,6 +18,8 @@
     <PackageTags>neural net</PackageTags>
     <Copyright>2018 Thomas Holmes</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyName>RichTea.NeuralNetLib</AssemblyName>
+    <RootNamespace>RichTea.NeuralNetLib</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

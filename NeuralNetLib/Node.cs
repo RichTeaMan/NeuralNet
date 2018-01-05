@@ -1,11 +1,11 @@
-﻿using NeuralNetLib.Serialisation;
+﻿using RichTea.NeuralNetLib.Serialisation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralNetLib
+namespace RichTea.NeuralNetLib
 {
     public class Node
     {

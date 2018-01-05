@@ -1,11 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeuralNetLib;
-using NeuralNetLib.Serialisation;
+using RichTea.NeuralNetLib.Serialisation;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace NeuralNetLibTest
+namespace RichTea.NeuralNetLib.Test
 {
     [TestClass]
     public class SerialisedNetTest

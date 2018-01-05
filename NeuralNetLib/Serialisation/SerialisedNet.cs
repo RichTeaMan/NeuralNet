@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralNetLib.Serialisation
+namespace RichTea.NeuralNetLib.Serialisation
 {
     public class SerialisedNet
     {

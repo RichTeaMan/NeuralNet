@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace NeuralNetLib.Serialisation
+namespace RichTea.NeuralNetLib.Serialisation
 {
     public class SerialisedNodeLayer
     {
