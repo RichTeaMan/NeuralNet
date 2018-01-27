@@ -17,6 +17,13 @@ namespace RichTea.NeuralNetLib
             return net;
         }
 
+        public Net GenerateRandomNet(int inputCount, int outputCount, int hiddenLayers, Random random)
+        {
+            Net net = new Net(inputCount, outputCount, hiddenLayers + 2);
+            net.SeedWeights(random);
+            return net;
+        }
+
         public List<Net> GenerateRandomNetList(int inputCount, int outputCount, Random random, int netCount)
         {
             List<Net> netList = new List<Net>();
