@@ -24,6 +24,11 @@
 
   <ItemGroup>
     <PackageReference Include="RichTea.Common" Version="0.8.0-beta" />
+    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mutators\" />
   </ItemGroup>
 
 </Project>

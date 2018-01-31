@@ -26,10 +26,16 @@ namespace RichTea.NeuralNetLib
 
         public List<Net> GenerateRandomNetList(int inputCount, int outputCount, Random random, int netCount)
         {
+            List<Net> netList = GenerateRandomNetList(inputCount, outputCount, 1, random, netCount);
+            return netList;
+        }
+
+        public List<Net> GenerateRandomNetList(int inputCount, int outputCount, int hiddenLayers, Random random, int netCount)
+        {
             List<Net> netList = new List<Net>();
             foreach(var i in Enumerable.Range(0, netCount))
             {
-                Net net = GenerateRandomNet(inputCount, outputCount, random);
+                Net net = GenerateRandomNet(inputCount, outputCount, hiddenLayers, random);
                 netList.Add(net);
             }
             return netList;
