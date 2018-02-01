@@ -10,25 +10,43 @@ using System.Threading.Tasks;
 
 namespace RichTea.NeuralNetLib
 {
-    public class GeneticAlgorithmTrainer
+    public class GeneticAlgorithmTrainer<T> where T : IFitnessEvaluator
     {
-        public int threads { get; set; } = Environment.ProcessorCount;
-        public int? seed = null;
+        public int Threads { get; set; } = Environment.ProcessorCount;
+        public int? Seed { get; set; } = null;
+
+        public T FitnessEvaluator { get; }
+
+        public delegate void IterationStartedEventArgsHandler(GeneticAlgorithmTrainer<T> sender, IterationStartedEventArgs iterationStartedEventArgs);
+
+        public event IterationStartedEventArgsHandler IterationStarted;
+
+        public delegate void IterationInProgressEventArgsHandler(GeneticAlgorithmTrainer<T> sender, IterationInProgressEventArgs iterationInProgressEventArgs);
+
+        public event IterationInProgressEventArgsHandler IterationInProgress;
+
+        public delegate void IterationCompleteEventArgsHandler(GeneticAlgorithmTrainer<T> sender, IterationCompleteEventArgs iterationCompleteEventArgs);
+
+        public event IterationCompleteEventArgsHandler IterationComplete;
+
+        public GeneticAlgorithmTrainer(T fitnessEvaluator)
+        {
+            FitnessEvaluator = fitnessEvaluator;
+        }
 
         public List<Net> TrainAi(
             int inputCount,
             int outputCount,
             int hiddenLayers,
             int generationCount,
-            int iterationCount,
-            IFitnessEvaluator fitnessEvaluator
+            int iterationCount
             )
         {
             Random random;
-            if (seed.HasValue)
+            if (Seed.HasValue)
             {
-                Console.WriteLine($"Random seed: {seed}");
-                random = new Random(seed.Value);
+                Console.WriteLine($"Random seed: {Seed}");
+                random = new Random(Seed.Value);
             }
             else
             {
@@ -49,10 +67,9 @@ namespace RichTea.NeuralNetLib
             int totalEvaluations = 0;
             foreach (var currentIteration in Enumerable.Range(0, iterationCount))
             {
-                // TODO: Add event
-                Console.WriteLine($"Iteration {currentIteration} underway.");
-
                 int netsProcessedInGeneration = 0;
+
+                IterationStarted?.Invoke(this, new IterationStartedEventArgs(new TrainingStatus(currentIteration, netsProcessedInGeneration, totalEvaluations, new TimeSpan(), trainerStopwatch.Elapsed)));
 
                 ConcurrentBag<EvaluatedNet> netEvaluations = new ConcurrentBag<EvaluatedNet>();
 
@@ -61,14 +78,18 @@ namespace RichTea.NeuralNetLib
 
                 ParallelOptions parallelOptions = new ParallelOptions
                 {
-                    MaxDegreeOfParallelism = threads
+                    MaxDegreeOfParallelism = Threads
                 };
                 Parallel.ForEach(contestants, parallelOptions, (contestant, loopState) =>
                 {
                     var trainingStatus = new TrainingStatus(currentIteration, netsProcessedInGeneration, totalEvaluations, stopwatch.Elapsed, trainerStopwatch.Elapsed);
 
                     var competingContestants = contestants.Where(n => !ReferenceEquals(n, contestant)).ToList().AsReadOnly();
-                    int fitnessScore = fitnessEvaluator.EvaluateNet(competingContestants, contestant, trainingStatus);
+                    int fitnessScore = FitnessEvaluator.EvaluateNet(competingContestants, contestant, trainingStatus);
+
+                    var postEvaltrainingStatus = new TrainingStatus(currentIteration, netsProcessedInGeneration, totalEvaluations, stopwatch.Elapsed, trainerStopwatch.Elapsed);
+
+                    IterationInProgress?.Invoke(this, new IterationInProgressEventArgs(postEvaltrainingStatus));
 
                     var evaluatedNet = new EvaluatedNet(contestant, fitnessScore);
                     netEvaluations.Add(evaluatedNet);
@@ -80,11 +101,7 @@ namespace RichTea.NeuralNetLib
 
                 var orderedContestants = netEvaluations.OrderByDescending(ne => ne.FitnessScore).ToList();
 
-                // TODO: Add event
-                Console.WriteLine();
-                Console.WriteLine("Generation complete.");
-
-                // write nets?
+                IterationComplete?.Invoke(this, new IterationCompleteEventArgs(orderedContestants, new TrainingStatus(currentIteration, netsProcessedInGeneration, totalEvaluations, stopwatch.Elapsed, trainerStopwatch.Elapsed)));
 
                 var nextContestants = new List<Net>();
                 foreach (var contestantI in orderedContestants.Take(generationCount / 2))
@@ -108,9 +125,6 @@ namespace RichTea.NeuralNetLib
             }
             trainerStopwatch.Stop();
 
-            // TODO add event
-
-            Console.WriteLine($"Training complete.");
             return contestants;
         }
 
