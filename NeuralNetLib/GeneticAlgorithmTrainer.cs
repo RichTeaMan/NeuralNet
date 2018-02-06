@@ -118,7 +118,7 @@ namespace RichTea.NeuralNetLib
                         var secondNet = orderedContestants[pick].Net;
                         spawnedNet = splitChromosomeMutator.GenetateMutatedNeuralNet(contestantI.Net, secondNet);
                     }
-
+                    nextContestants.Add(contestantI.Net);
                     nextContestants.Add(spawnedNet);
                 }
                 contestants = nextContestants;
