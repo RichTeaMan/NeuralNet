@@ -29,6 +29,10 @@ namespace RichTea.NeuralNetLib
 
         public event IterationCompleteEventArgsHandler IterationComplete;
 
+        public delegate void NetsSpawnedEventArgsHandler(GeneticAlgorithmTrainer<T> sender, NetsSpawnedEventArgs netsSpawnedEventArgs);
+
+        public event NetsSpawnedEventArgsHandler NetsSpawned;
+
         public GeneticAlgorithmTrainer(T fitnessEvaluator)
         {
             FitnessEvaluator = fitnessEvaluator;
@@ -60,6 +64,7 @@ namespace RichTea.NeuralNetLib
             SplitChromosomeMutator splitChromosomeMutator = new SplitChromosomeMutator(random);
 
             List<Net> contestants = new NetFactory().GenerateRandomNetList(inputCount, outputCount, hiddenLayers, random, generationCount);
+            NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants));
 
             Stopwatch trainerStopwatch = new Stopwatch();
             trainerStopwatch.Start();
@@ -122,6 +127,7 @@ namespace RichTea.NeuralNetLib
                     nextContestants.Add(spawnedNet);
                 }
                 contestants = nextContestants;
+                NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants));
             }
             trainerStopwatch.Stop();
 
