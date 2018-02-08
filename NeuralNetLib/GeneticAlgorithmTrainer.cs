@@ -17,6 +17,8 @@ namespace RichTea.NeuralNetLib
 
         public T FitnessEvaluator { get; }
 
+        public IReadOnlyList<INeuralNetMutator> Mutators { get; }
+
         public delegate void IterationStartedEventArgsHandler(GeneticAlgorithmTrainer<T> sender, IterationStartedEventArgs iterationStartedEventArgs);
 
         public event IterationStartedEventArgsHandler IterationStarted;
@@ -33,9 +35,30 @@ namespace RichTea.NeuralNetLib
 
         public event NetsSpawnedEventArgsHandler NetsSpawned;
 
+        private Random _random;
+
         public GeneticAlgorithmTrainer(T fitnessEvaluator)
         {
             FitnessEvaluator = fitnessEvaluator;
+            if (Seed.HasValue)
+            {
+                Console.WriteLine($"Random seed: {Seed}");
+                _random = new Random(Seed.Value);
+            }
+            else
+            {
+                _random = new Random();
+            }
+
+
+            var randomMutator = new RandomMutator(_random)
+            {
+                Deviation = 0.00001
+            };
+            var splitChromosomeMutator = new SplitChromosomeMutator(_random);
+            var singularRandomNodeMutator = new SingularRandomNodeMutator(_random);
+
+            Mutators = new List<INeuralNetMutator>() { randomMutator, splitChromosomeMutator, singularRandomNodeMutator };
         }
 
         public List<Net> TrainAi(
@@ -46,30 +69,16 @@ namespace RichTea.NeuralNetLib
             int iterationCount
             )
         {
-            Random random;
-            if (Seed.HasValue)
-            {
-                Console.WriteLine($"Random seed: {Seed}");
-                random = new Random(Seed.Value);
-            }
-            else
-            {
-                random = new Random();
-            }
 
-            RandomMutator randomMutator = new RandomMutator(random)
-            {
-                Deviation = 0.00001
-            };
-            SplitChromosomeMutator splitChromosomeMutator = new SplitChromosomeMutator(random);
-
-            List<Net> contestants = new NetFactory().GenerateRandomNetList(inputCount, outputCount, hiddenLayers, random, generationCount);
-            NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants));
+            List<Net> contestants = new NetFactory().GenerateRandomNetList(inputCount, outputCount, hiddenLayers, _random, generationCount);
+            NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants, null));
 
             Stopwatch trainerStopwatch = new Stopwatch();
             trainerStopwatch.Start();
 
             int totalEvaluations = 0;
+
+            var mutatorEnumerator = Mutators.GetEnumerator();
             foreach (var currentIteration in Enumerable.Range(0, iterationCount))
             {
                 int netsProcessedInGeneration = 0;
@@ -108,26 +117,38 @@ namespace RichTea.NeuralNetLib
 
                 IterationComplete?.Invoke(this, new IterationCompleteEventArgs(orderedContestants, new TrainingStatus(currentIteration, netsProcessedInGeneration, totalEvaluations, stopwatch.Elapsed, trainerStopwatch.Elapsed)));
 
+                if (!mutatorEnumerator.MoveNext())
+                {
+                    mutatorEnumerator.Reset();
+                    mutatorEnumerator.MoveNext();
+                }
+                var mutator = mutatorEnumerator.Current;
                 var nextContestants = new List<Net>();
                 foreach (var contestantI in orderedContestants.Take(generationCount / 2))
                 {
                     Net spawnedNet;
-                    if (currentIteration % 2 == 0)
+
+                    if (mutator is INeuralNetOneParentMutator oneParentMutator)
                     {
-                        spawnedNet = randomMutator.GenetateMutatedNeuralNet(contestantI.Net);
+                        spawnedNet = oneParentMutator.GenetateMutatedNeuralNet(contestantI.Net);
+                    }
+                    else if (mutator is INeuralNetTwoParentMutator twoParentMutator)
+                    {
+                        // get random second parent
+                        int pick = _random.Next(generationCount / 2);
+                        var secondNet = orderedContestants[pick].Net;
+                        spawnedNet = twoParentMutator.GenetateMutatedNeuralNet(contestantI.Net, secondNet);
                     }
                     else
                     {
-                        // get random second parent
-                        int pick = random.Next(generationCount / 2);
-                        var secondNet = orderedContestants[pick].Net;
-                        spawnedNet = splitChromosomeMutator.GenetateMutatedNeuralNet(contestantI.Net, secondNet);
+                        throw new Exception("Unknown mutator interface.");
                     }
                     nextContestants.Add(contestantI.Net);
                     nextContestants.Add(spawnedNet);
                 }
                 contestants = nextContestants;
-                NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants));
+                NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants, mutator));
+
             }
             trainerStopwatch.Stop();
 

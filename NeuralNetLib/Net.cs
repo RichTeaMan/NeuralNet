@@ -19,6 +19,28 @@ namespace RichTea.NeuralNetLib
             get { return NodeLayers.Length; }
         }
 
+        public int NodeCount
+        {
+            get
+            {
+                return NodeLayers.Sum(nl => nl.Nodes.Length);
+            }
+        }
+
+        public IEnumerable<Node> Nodes
+        {
+            get
+            {
+                foreach (var nodeLayer in NodeLayers)
+                {
+                    foreach (var node in nodeLayer.Nodes)
+                    {
+                        yield return node;
+                    }
+                }
+            }
+        }
+
         private NormaliserNode[] normaliserNodes;
 
         #endregion
