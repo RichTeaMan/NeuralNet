@@ -19,6 +19,8 @@ namespace RichTea.NeuralNetLib
             get { return NodeLayers.Length; }
         }
 
+        private NormaliserNode[] normaliserNodes;
+
         #endregion
 
         #region Methods
@@ -39,6 +41,8 @@ namespace RichTea.NeuralNetLib
                 NodeLayers[i] = new NodeLayer(inputs, inputs);
             }
             NodeLayers[layers - 1] = new NodeLayer(inputs, outputs);
+
+            normaliserNodes = Enumerable.Range(0, Inputs).Select(i => new NormaliserNode()).ToArray();
         }
 
         public Net(IEnumerable<NodeLayer> nodeLayers)
@@ -52,6 +56,8 @@ namespace RichTea.NeuralNetLib
             Outputs = nodeLayers.Last().Outputs;
 
             NodeLayers = nodeLayers.ToArray();
+
+            normaliserNodes = Enumerable.Range(0, Inputs).Select(i => new NormaliserNode()).ToArray();
         }
 
         public void SeedWeights(Random random)
@@ -96,7 +102,12 @@ namespace RichTea.NeuralNetLib
                 throw new ArgumentException("There is an incorrect number of Inputs.");
             }
 
-            double[] interStep = inputs;
+            double[] interStep = new double[Inputs];
+            foreach (var i in Enumerable.Range(0, Inputs))
+            {
+                interStep[i] = normaliserNodes[i].Calculate(inputs[i]);
+            }
+
             foreach (var layer in NodeLayers)
             {
                 interStep = layer.Calculate(interStep);
