@@ -57,8 +57,16 @@ namespace RichTea.NeuralNetLib
             };
             var splitChromosomeMutator = new SplitChromosomeMutator(_random);
             var singularRandomNodeMutator = new SingularRandomNodeMutator(_random);
+            var weakestNodeMutator = new WeakestNodeMutator(_random);
+            var crossoverNodesMutator = new CrossoverNodesMutator(_random);
 
-            Mutators = new List<INeuralNetMutator>() { randomMutator, splitChromosomeMutator, singularRandomNodeMutator };
+            Mutators = new List<INeuralNetMutator>() {
+                randomMutator,
+                splitChromosomeMutator,
+                singularRandomNodeMutator,
+                weakestNodeMutator,
+                crossoverNodesMutator
+            };
         }
 
         public List<Net> TrainAi(

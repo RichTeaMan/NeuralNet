@@ -5,27 +5,26 @@ using System.Linq;
 namespace RichTea.NeuralNetLib.Mutators
 {
     /// <summary>
-    /// Completely reseeds one random node in the net.
+    /// Completey reseeds the weakest node in the net.
     /// </summary>
-    public class SingularRandomNodeMutator : INeuralNetOneParentMutator
+    public class WeakestNodeMutator : INeuralNetOneParentMutator
     {
+
         private Random _random;
 
-        public SingularRandomNodeMutator(Random random)
+        public WeakestNodeMutator(Random random)
         {
             _random = random;
         }
 
-        public SingularRandomNodeMutator() : this(new Random()) { }
+        public WeakestNodeMutator() : this(new Random()) { }
 
         public Net GenetateMutatedNeuralNet(Net parentNet)
         {
             Net mutatedNet = new Net(parentNet.Inputs, parentNet.Outputs, parentNet.Layers);
             mutatedNet.SeedWeights(parentNet);
 
-            int nodeIndexToMutate = _random.Next(parentNet.NodeCount);
-
-            var mutatedNode = mutatedNet.Nodes.ElementAt(nodeIndexToMutate);
+            var mutatedNode = mutatedNet.Nodes.OrderBy(n => n.Bias + n.Weights.Sum()).First();
             mutatedNode.SeedWeights(_random);
             return mutatedNet;
         }
