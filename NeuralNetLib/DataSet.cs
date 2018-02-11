@@ -94,12 +94,14 @@ namespace RichTea.NeuralNetLib
         {
             _inputs = new List<double>();
             _outputs = new List<double>();
+            _inputNames = new Dictionary<string, int>();
         }
 
         public DataSet(double[] Inputs, double[] Outputs)
         {
             _inputs = new List<double>(Inputs);
             _outputs = new List<double>(Outputs);
+            _inputNames = new Dictionary<string, int>();
         }
     }
 }
