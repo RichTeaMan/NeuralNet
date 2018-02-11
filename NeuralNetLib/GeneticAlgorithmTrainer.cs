@@ -21,11 +21,6 @@ namespace RichTea.NeuralNetLib
         public int Threads { get; set; } = Environment.ProcessorCount;
 
         /// <summary>
-        /// Gets or sets the seed for the random number generator.
-        /// </summary>
-        public int? Seed { get; set; } = null;
-
-        /// <summary>
         /// Gets the fitness evaluator used in the trainer.
         /// </summary>
         public T FitnessEvaluator { get; }
@@ -88,20 +83,8 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         private Random _random;
 
-        public GeneticAlgorithmTrainer(T fitnessEvaluator)
+        public static List<INeuralNetMutator> CreateDefaultMutators(Random _random)
         {
-            FitnessEvaluator = fitnessEvaluator;
-            if (Seed.HasValue)
-            {
-                Console.WriteLine($"Random seed: {Seed}");
-                _random = new Random(Seed.Value);
-            }
-            else
-            {
-                _random = new Random();
-            }
-
-
             var randomMutator = new RandomMutator(_random)
             {
                 Deviation = 0.00001
@@ -111,25 +94,57 @@ namespace RichTea.NeuralNetLib
             var weakestNodeMutator = new WeakestNodeMutator(_random);
             var crossoverNodesMutator = new CrossoverNodesMutator(_random);
 
-            Mutators = new List<INeuralNetMutator>() {
+            var mutators = new List<INeuralNetMutator>() {
                 randomMutator,
                 splitChromosomeMutator,
                 singularRandomNodeMutator,
                 weakestNodeMutator,
                 crossoverNodesMutator
             };
+            return mutators;
         }
 
+        /// <summary>
+        /// Constructs genetic algoritm trainer.
+        /// </summary>
+        /// <param name="random">The random number generator to use.</param>
+        /// <param name="fitnessEvaluator">Fitness evaluator to use.</param>
+        public GeneticAlgorithmTrainer(Random random, T fitnessEvaluator) : this(random, fitnessEvaluator, CreateDefaultMutators(random))
+        {
+        }
+
+        /// <summary>
+        /// Constructs genetic algoritm trainer.
+        /// </summary>
+        /// <param name="random">The random number generator to use.</param>
+        /// <param name="fitnessEvaluator">Fitness evaluator to use.</param>
+        /// <param name="mutators">Mutators to use.</param>
+        public GeneticAlgorithmTrainer(Random random, T fitnessEvaluator, IEnumerable<INeuralNetMutator> mutators)
+        {
+            FitnessEvaluator = fitnessEvaluator;
+            _random = random;
+            Mutators = mutators.ToList();
+        }
+
+        /// <summary>
+        /// Trains neural nets with the given parameters.
+        /// </summary>
+        /// <param name="inputCount">How many inputs a net should have.</param>
+        /// <param name="outputCount">How many outputs a net should have.</param>
+        /// <param name="hiddenLayers">How many hidden layers a net should have.</param>
+        /// <param name="populationCount">How many nets will be tested in each iteration.</param>
+        /// <param name="iterationCount">How many iterations the trainer should complete.</param>
+        /// <returns></returns>
         public List<Net> TrainAi(
             int inputCount,
             int outputCount,
             int hiddenLayers,
-            int generationCount,
+            int populationCount,
             int iterationCount
             )
         {
 
-            List<Net> contestants = new NetFactory().GenerateRandomNetList(inputCount, outputCount, hiddenLayers, _random, generationCount);
+            List<Net> contestants = new NetFactory().GenerateRandomNetList(inputCount, outputCount, hiddenLayers, _random, populationCount);
             NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants, null));
 
             Stopwatch trainerStopwatch = new Stopwatch();
@@ -183,7 +198,7 @@ namespace RichTea.NeuralNetLib
                 }
                 var mutator = mutatorEnumerator.Current;
                 var nextContestants = new List<Net>();
-                foreach (var contestantI in orderedContestants.Take(generationCount / 2))
+                foreach (var contestantI in orderedContestants.Take(populationCount / 2))
                 {
                     Net spawnedNet;
 
@@ -194,7 +209,7 @@ namespace RichTea.NeuralNetLib
                     else if (mutator is INeuralNetTwoParentMutator twoParentMutator)
                     {
                         // get random second parent
-                        int pick = _random.Next(generationCount / 2);
+                        int pick = _random.Next(populationCount / 2);
                         var secondNet = orderedContestants[pick].Net;
                         spawnedNet = twoParentMutator.GenetateMutatedNeuralNet(contestantI.Net, secondNet);
                     }
