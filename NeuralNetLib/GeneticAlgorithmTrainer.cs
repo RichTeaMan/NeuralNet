@@ -4,37 +4,88 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace RichTea.NeuralNetLib
 {
+    /// <summary>
+    /// Generalised genetic algorithm trainer for neural nets.
+    /// </summary>
+    /// <typeparam name="T">Fitness evaluator for sorting nets.</typeparam>
     public class GeneticAlgorithmTrainer<T> where T : IFitnessEvaluator
     {
+        /// <summary>
+        /// Gets or sets the amount of threads to use. Defaults to prcoessor thread count.
+        /// </summary>
         public int Threads { get; set; } = Environment.ProcessorCount;
+
+        /// <summary>
+        /// Gets or sets the seed for the random number generator.
+        /// </summary>
         public int? Seed { get; set; } = null;
 
+        /// <summary>
+        /// Gets the fitness evaluator used in the trainer.
+        /// </summary>
         public T FitnessEvaluator { get; }
 
+        /// <summary>
+        /// Gets a readonly list of mutators used in the trainer.
+        /// </summary>
         public IReadOnlyList<INeuralNetMutator> Mutators { get; }
 
+        /// <summary>
+        /// Represents the method that will handle iteration started events.
+        /// </summary>
+        /// <param name="sender">The trainer that invoked the event.</param>
+        /// <param name="iterationStartedEventArgs">Event arguments.</param>
         public delegate void IterationStartedEventArgsHandler(GeneticAlgorithmTrainer<T> sender, IterationStartedEventArgs iterationStartedEventArgs);
 
+        /// <summary>
+        /// Occurs when the iteration has started.
+        /// </summary>
         public event IterationStartedEventArgsHandler IterationStarted;
 
+        /// <summary>
+        /// Represents the method that will handle iteration in progress events.
+        /// </summary>
+        /// <param name="sender">The trainer that invoked the event.</param>
+        /// <param name="iterationInProgressEventArgs">Event arguments.</param>
         public delegate void IterationInProgressEventArgsHandler(GeneticAlgorithmTrainer<T> sender, IterationInProgressEventArgs iterationInProgressEventArgs);
 
+        /// <summary>
+        /// Occurs regularly when the iteration is in progress. This event will be fired very frequently, for performance reasons and consumers of this should exit as fast as possible.
+        /// </summary>
         public event IterationInProgressEventArgsHandler IterationInProgress;
 
+        /// <summary>
+        /// Represents the method that will handle iteration complete events.
+        /// </summary>
+        /// <param name="sender">The trainer that invoked the event.</param>
+        /// <param name="iterationCompleteEventArgs">Event arguments.</param>
         public delegate void IterationCompleteEventArgsHandler(GeneticAlgorithmTrainer<T> sender, IterationCompleteEventArgs iterationCompleteEventArgs);
 
+        /// <summary>
+        /// Occurs when the iteration is complete.
+        /// </summary>
         public event IterationCompleteEventArgsHandler IterationComplete;
 
+        /// <summary>
+        /// Represents the method that will handle nets spawned events.
+        /// </summary>
+        /// <param name="sender">The trainer that invoked the event.</param>
+        /// <param name="netsSpawnedEventArgs">Event arguments.</param>
         public delegate void NetsSpawnedEventArgsHandler(GeneticAlgorithmTrainer<T> sender, NetsSpawnedEventArgs netsSpawnedEventArgs);
 
+        /// <summary>
+        /// Occurs when nets have been spawned.
+        /// </summary>
         public event NetsSpawnedEventArgsHandler NetsSpawned;
 
+        /// <summary>
+        /// Random.
+        /// </summary>
         private Random _random;
 
         public GeneticAlgorithmTrainer(T fitnessEvaluator)
