@@ -10,12 +10,12 @@ namespace RichTea.NeuralNetLib
         /// <summary>
         /// Gets the lowest value this node has so far encountered.
         /// </summary>
-        public double Minima { get; private set; } = 0;
+        public double Minima { get; private set; } = double.NaN;
 
         /// <summary>
         /// Gets the greatest value this node has so far encountered.
         /// </summary>
-        public double Maxima { get; private set; } = 0;
+        public double Maxima { get; private set; } = double.NaN;
 
         /// <summary>
         /// Calculates a normalised output based in the given input.
@@ -24,6 +24,15 @@ namespace RichTea.NeuralNetLib
         /// <returns>Normalised output.</returns>
         public double Calculate(double input)
         {
+            if (double.IsNaN(Minima))
+            {
+                Minima = input;
+            }
+            if (double.IsNaN(Maxima))
+            {
+                Maxima = input;
+            }
+
             if (input < Minima)
             {
                 Minima = input;
@@ -33,7 +42,11 @@ namespace RichTea.NeuralNetLib
                 Maxima = input;
             }
 
-            double result = input / (Maxima - Minima);
+            double result = 1.0;
+            if (Minima != Maxima)
+            {
+                result = (input - Minima) / (Maxima - Minima);
+            }
             return result;
         }
     }
