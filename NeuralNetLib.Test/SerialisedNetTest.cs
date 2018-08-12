@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichTea.NeuralNetLib.Serialisation;
 using System;
+using System.Linq;
 
 namespace RichTea.NeuralNetLib.Test
 {
@@ -64,6 +65,31 @@ namespace RichTea.NeuralNetLib.Test
             b.SeedWeights(a);
 
             Assert.AreEqual(a.CreateSerialisedNet(), b.CreateSerialisedNet());
+        }
+
+        [TestMethod]
+        public void SerialisedNetDoesNotMutateSourceTest()
+        {
+            var rand = new Random(5);
+            var net = new Net(3, 1);
+
+            net.SeedWeights(rand);
+
+            var firstNode = net.Nodes.First();
+            double bias = firstNode.Bias;
+            double weight = firstNode.Weights.First();
+
+            var serialisedNet = net.CreateSerialisedNet();
+
+            Assert.AreEqual(bias, serialisedNet.NodeLayers.First().Nodes.First().Bias);
+            Assert.AreEqual(weight, serialisedNet.NodeLayers.First().Nodes.First().Weights[0]);
+
+            // modify node
+            serialisedNet.NodeLayers.First().Nodes.First().Bias += 0.1;
+            serialisedNet.NodeLayers.First().Nodes.First().Weights[0] += 0.1;
+
+            Assert.AreEqual(bias, firstNode.Bias);
+            Assert.AreEqual(weight, firstNode.Weights.First());
         }
 
         [TestMethod]

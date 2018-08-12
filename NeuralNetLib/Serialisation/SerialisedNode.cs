@@ -16,7 +16,7 @@ namespace RichTea.NeuralNetLib.Serialisation
         {
             var node = new Node(Weights.Length)
             {
-                Weights = Weights,
+                Weights = Weights.ToArray(),
                 Bias = Bias
             };
             return node;
