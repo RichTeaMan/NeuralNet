@@ -11,6 +11,15 @@ namespace RichTea.NeuralNetLib
     {
         #region Properties
 
+        /// <summary>
+        /// Gets or sets if output should be normalised.
+        /// If true, all output is guaranteed to be between 0 and 1.0 but output may not be deterministic until the net
+        /// has seen all extremes of data.
+        /// 
+        /// Defaults to false.
+        /// </summary>
+        public bool NormaliseOutput { get; set; } = false;
+
         public NodeLayer[] NodeLayers { get; private set; }
         public int Inputs { get; private set; }
         public int Outputs { get; private set; }
@@ -124,10 +133,13 @@ namespace RichTea.NeuralNetLib
                 throw new ArgumentException("There is an incorrect number of Inputs.");
             }
 
-            double[] interStep = new double[Inputs];
-            foreach (var i in Enumerable.Range(0, Inputs))
+            double[] interStep = inputs.ToArray();
+            if (NormaliseOutput)
             {
-                interStep[i] = normaliserNodes[i].Calculate(inputs[i]);
+                foreach (var i in Enumerable.Range(0, Inputs))
+                {
+                    interStep[i] = normaliserNodes[i].Calculate(inputs[i]);
+                }
             }
 
             foreach (var layer in NodeLayers)
