@@ -87,19 +87,25 @@ namespace RichTea.NeuralNetLib
         {
             var randomMutator = new RandomMutator(_random)
             {
-                Deviation = 0.00001
+                Deviation = 0.001
             };
             var splitChromosomeMutator = new SplitChromosomeMutator(_random);
             var singularRandomNodeMutator = new SingularRandomNodeMutator(_random);
             var weakestNodeMutator = new WeakestNodeMutator(_random);
             var crossoverNodesMutator = new CrossoverNodesMutator(_random);
+            var smallRandomParameterMutator = new RandomParameterMutator() { ParameterAmount = 4 };
+            var bigRandomParameterMutator = new RandomParameterMutator() { Deviation = 0.1 };
+            var reallyRandomParameterMutator = new RandomParameterMutator() { Deviation = 1.0 };
 
             var mutators = new List<INeuralNetMutator>() {
                 randomMutator,
                 splitChromosomeMutator,
                 singularRandomNodeMutator,
                 weakestNodeMutator,
-                crossoverNodesMutator
+                crossoverNodesMutator,
+                smallRandomParameterMutator,
+                bigRandomParameterMutator,
+                reallyRandomParameterMutator
             };
             return mutators;
         }
@@ -141,10 +147,26 @@ namespace RichTea.NeuralNetLib
             int hiddenLayers,
             int populationCount,
             int iterationCount
-            )
+        )
         {
-
             List<Net> contestants = new NetFactory().GenerateRandomNetList(inputCount, outputCount, hiddenLayers, _random, populationCount);
+            return TrainAi(contestants, populationCount, iterationCount);
+        }
+
+        /// <summary>
+        /// Trains neural nets with the given parameters.
+        /// </summary>
+        /// <param name="startingContestants">StartingContestants.</param>
+        /// <param name="populationCount">How many nets will be tested in each iteration.</param>
+        /// <param name="iterationCount">How many iterations the trainer should complete.</param>
+        /// <returns></returns>
+        public List<Net> TrainAi(
+        IEnumerable<Net> startingContestants,
+            int populationCount,
+            int iterationCount
+        )
+        {
+            List<Net> contestants = startingContestants.ToList();
             NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants, null));
 
             Stopwatch trainerStopwatch = new Stopwatch();
@@ -197,9 +219,23 @@ namespace RichTea.NeuralNetLib
                     mutatorEnumerator.MoveNext();
                 }
                 var mutator = mutatorEnumerator.Current;
+                var topContestantList = orderedContestants.Take(populationCount / 10).ToList();
+                var topContestantEnumerator = topContestantList.GetEnumerator();
                 var nextContestants = new List<Net>();
-                foreach (var contestantI in orderedContestants.Take(populationCount / 2))
+                while (topContestantEnumerator.MoveNext())
                 {
+                    nextContestants.Add(topContestantEnumerator.Current.Net);
+                }
+                topContestantEnumerator = topContestantList.GetEnumerator();
+                while (nextContestants.Count < populationCount)
+                {
+                    if (!topContestantEnumerator.MoveNext())
+                    {
+                        topContestantEnumerator = topContestantList.GetEnumerator();
+                        topContestantEnumerator.MoveNext();
+                    }
+                    var contestantI = topContestantEnumerator.Current;
+
                     Net spawnedNet;
 
                     if (mutator is INeuralNetOneParentMutator oneParentMutator)
@@ -217,7 +253,7 @@ namespace RichTea.NeuralNetLib
                     {
                         throw new Exception("Unknown mutator interface.");
                     }
-                    nextContestants.Add(contestantI.Net);
+
                     nextContestants.Add(spawnedNet);
                 }
                 contestants = nextContestants;
