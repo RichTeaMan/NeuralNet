@@ -27,7 +27,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RichTea.Common" Version="0.8.0-beta" />
+    <PackageReference Include="RichTea.Common" Version="1.0.0" />
     <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
   </ItemGroup>
 
