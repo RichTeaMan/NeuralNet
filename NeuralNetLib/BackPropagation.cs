@@ -128,8 +128,8 @@ namespace RichTea.NeuralNetLib
 
         public double Train(Net Net, int Epochs = 1000)
         {
-            Dictionary<Node, double> deltas = new Dictionary<Node,double>();
-            foreach(var nodeLayer in Net.NodeLayers)
+            var deltas = new Dictionary<Node, double>(new IdentityComparer());
+            foreach (var nodeLayer in Net.NodeLayers)
             {
                 foreach(var node in nodeLayer.Nodes)
                 {
@@ -185,5 +185,30 @@ namespace RichTea.NeuralNetLib
             return SSE;
         }
 
+        public class IdentityComparer : IEqualityComparer<Node>
+        {
+            public bool Equals(Node x, Node y)
+            {
+                var r = ReferenceEquals(x, y);
+                return r;
+            }
+
+            public int GetHashCode(Node obj)
+            {
+                // nodes are not immutable, so hash code is liable to change which breaks the dictionary.
+                // instead force an equality check until a better hash implementation is used.
+                return 0;
+            }
+        }
+
+        private class NodeWrapper
+        {
+            public Node Node { get; }
+
+            public NodeWrapper(Node node)
+            {
+                Node = node ?? throw new ArgumentNullException(nameof(node));
+            }
+        }
     }
 }
