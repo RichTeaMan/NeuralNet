@@ -104,24 +104,33 @@ namespace RichTea.NeuralNetLib
         public override string ToString()
         {
             return new ToStringBuilder<Node>(this)
-                .Append(CreateSerialisedNode())
+                .Append(p => p.Bias)
+                .Append(p => p.Weights)
                 .ToString();
         }
-
+        
         public override bool Equals(object that)
         {
-            var thisNet = CreateSerialisedNode();
-            var thatNet = (that as Node)?.CreateSerialisedNode();
-            return new EqualsBuilder<Node>(this, that)
-                .Append(thisNet, thatNet)
-                .AreEqual;
-        }
+            bool equal = false;
+            var thatNode = that as Node;
+            if (null != thatNode)
+            {
+                equal = new EqualsBuilder<Node>(this, that)
+                    .Append(Bias, thatNode.Bias)
+                    .Append(Weights, thatNode.Weights)
+                    .AreEqual;
+            }
 
+            return equal;
+        }
+        
         public override int GetHashCode()
         {
-            return new HashCodeBuilder<Node>(this)
-                .Append(CreateSerialisedNode())
+            var hash = new HashCodeBuilder<Node>(this)
+                .Append(Bias)
+                .Append(Weights)
                 .HashCode;
+            return hash;
         }
 
         public static bool operator ==(Node lhs, Node rhs)

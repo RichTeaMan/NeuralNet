@@ -174,23 +174,21 @@ namespace RichTea.NeuralNetLib
         public override string ToString()
         {
             return new ToStringBuilder<Net>(this)
-                .Append(CreateSerialisedNet())
+                .Append(p => p.NodeLayers)
                 .ToString();
         }
 
         public override bool Equals(object that)
         {
-            var thisNet = CreateSerialisedNet();
-            var thatNet = (that as Net)?.CreateSerialisedNet();
             return new EqualsBuilder<Net>(this, that)
-                .Append(thisNet, thatNet)
+                .Append(p => p.NodeLayers)
                 .AreEqual;
         }
 
         public override int GetHashCode()
         {
             return new HashCodeBuilder<Net>(this)
-                .Append(CreateSerialisedNet())
+                .Append(NodeLayers)
                 .HashCode;
         }
 
