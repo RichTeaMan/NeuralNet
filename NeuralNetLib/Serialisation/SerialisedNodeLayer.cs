@@ -36,5 +36,20 @@ namespace RichTea.NeuralNetLib.Serialisation
                 .Append(Nodes)
                 .HashCode;
         }
+
+        public static bool operator ==(SerialisedNodeLayer lhs, SerialisedNodeLayer rhs)
+        {
+            if (ReferenceEquals(lhs, null))
+            {
+                return ReferenceEquals(rhs, null);
+            }
+
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(SerialisedNodeLayer lhs, SerialisedNodeLayer rhs)
+        {
+            return !(lhs == rhs);
+        }
     }
 }

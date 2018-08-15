@@ -1,9 +1,8 @@
-﻿using RichTea.NeuralNetLib.Serialisation;
+﻿using RichTea.Common;
+using RichTea.NeuralNetLib.Serialisation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RichTea.NeuralNetLib
 {
@@ -124,6 +123,44 @@ namespace RichTea.NeuralNetLib
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return new ToStringBuilder<NodeLayer>(this)
+                .Append(CreateSerialisedNodeLayer())
+                .ToString();
+        }
+
+        public override bool Equals(object that)
+        {
+            var thisNet = CreateSerialisedNodeLayer();
+            var thatNet = (that as NodeLayer)?.CreateSerialisedNodeLayer();
+            return new EqualsBuilder<NodeLayer>(this, that)
+                .Append(thisNet, thatNet)
+                .AreEqual;
+        }
+
+        public override int GetHashCode()
+        {
+            return new HashCodeBuilder<NodeLayer>(this)
+                .Append(CreateSerialisedNodeLayer())
+                .HashCode;
+        }
+
+        public static bool operator ==(NodeLayer lhs, NodeLayer rhs)
+        {
+            if (ReferenceEquals(lhs, null))
+            {
+                return ReferenceEquals(rhs, null);
+            }
+
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(NodeLayer lhs, NodeLayer rhs)
+        {
+            return !(lhs == rhs);
+        }
 
     }
 }
