@@ -221,7 +221,7 @@ namespace RichTea.NeuralNetLib
                 var mutator = mutatorEnumerator.Current;
                 var topContestantList = orderedContestants.Take(populationCount / 10).ToList();
                 var topContestantEnumerator = topContestantList.GetEnumerator();
-                var nextContestants = new List<Net>();
+                var nextContestants = new HashSet<Net>();
                 while (topContestantEnumerator.MoveNext())
                 {
                     nextContestants.Add(topContestantEnumerator.Current.Net);
@@ -254,9 +254,12 @@ namespace RichTea.NeuralNetLib
                         throw new Exception("Unknown mutator interface.");
                     }
 
-                    nextContestants.Add(spawnedNet);
+                    if (!nextContestants.Contains(spawnedNet))
+                    {
+                        nextContestants.Add(spawnedNet);
+                    }
                 }
-                contestants = nextContestants;
+                contestants = nextContestants.ToList();
                 NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants, mutator));
 
             }
