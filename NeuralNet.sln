@@ -8,7 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E4220C8C-0C6D-4075-A49A-471977422C0B}"
 	ProjectSection(SolutionItems) = preProject
 		build.cake = build.cake
-		build.ps1 = build.ps1
+		cake.ps1 = cake.ps1
 		license.txt = license.txt
 		readme.md = readme.md
 	EndProjectSection
