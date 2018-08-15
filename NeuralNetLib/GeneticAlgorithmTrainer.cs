@@ -15,6 +15,12 @@ namespace RichTea.NeuralNetLib
     /// <typeparam name="T">Fitness evaluator for sorting nets.</typeparam>
     public class GeneticAlgorithmTrainer<T> where T : IFitnessEvaluator
     {
+
+        /// <summary>
+        /// Gets or sets if nets should be normalised.
+        /// </summary>
+        public bool NormaliseNets { get; set; }
+
         /// <summary>
         /// Gets or sets the amount of threads to use. Defaults to prcoessor thread count.
         /// </summary>
@@ -83,6 +89,11 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         private Random _random;
 
+        /// <summary>
+        /// Creates a list of mutators that are used as defaults.
+        /// </summary>
+        /// <param name="_random">Random.</param>
+        /// <returns>Mutators.</returns>
         public static List<INeuralNetMutator> CreateDefaultMutators(Random _random)
         {
             var randomMutator = new RandomMutator(_random)
@@ -260,6 +271,7 @@ namespace RichTea.NeuralNetLib
                     }
                 }
                 contestants = nextContestants.ToList();
+                contestants.ForEach(c => c.NormaliseOutput = NormaliseNets);
                 NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants, mutator));
 
             }
