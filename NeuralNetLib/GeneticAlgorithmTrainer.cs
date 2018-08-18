@@ -1,4 +1,5 @@
 ﻿using RichTea.NeuralNetLib.Mutators;
+using RichTea.NeuralNetLib.Serialisation;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -232,10 +233,12 @@ namespace RichTea.NeuralNetLib
                 var mutator = mutatorEnumerator.Current;
                 var topContestantList = orderedContestants.Take(populationCount / 10).ToList();
                 var topContestantEnumerator = topContestantList.GetEnumerator();
-                var nextContestants = new HashSet<Net>();
+
+                // create serialised nets as they override equality methods so uniqueness can be verified.
+                var nextContestants = new HashSet<SerialisedNet>();
                 while (topContestantEnumerator.MoveNext())
                 {
-                    nextContestants.Add(topContestantEnumerator.Current.Net);
+                    nextContestants.Add(topContestantEnumerator.Current.Net.CreateSerialisedNet());
                 }
                 topContestantEnumerator = topContestantList.GetEnumerator();
                 while (nextContestants.Count < populationCount)
@@ -265,12 +268,13 @@ namespace RichTea.NeuralNetLib
                         throw new Exception("Unknown mutator interface.");
                     }
 
-                    if (!nextContestants.Contains(spawnedNet))
+                    var serialSpawnNet = spawnedNet.CreateSerialisedNet();
+                    if (!nextContestants.Contains(serialSpawnNet))
                     {
-                        nextContestants.Add(spawnedNet);
+                        nextContestants.Add(serialSpawnNet);
                     }
                 }
-                contestants = nextContestants.ToList();
+                contestants = nextContestants.Select(n => n.CreateNet()).ToList();
                 contestants.ForEach(c => c.NormaliseOutput = NormaliseNets);
                 NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants, mutator));
 

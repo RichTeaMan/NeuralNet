@@ -131,34 +131,5 @@ namespace RichTea.NeuralNetLib
                 .ToString();
         }
 
-        public override bool Equals(object that)
-        {
-            return new EqualsBuilder<NodeLayer>(this, that)
-                .Append(p => p.Nodes)
-                .AreEqual;
-        }
-
-        public override int GetHashCode()
-        {
-            return new HashCodeBuilder<NodeLayer>(this)
-                .Append(Nodes)
-                .HashCode;
-        }
-
-        public static bool operator ==(NodeLayer lhs, NodeLayer rhs)
-        {
-            if (ReferenceEquals(lhs, null))
-            {
-                return ReferenceEquals(rhs, null);
-            }
-
-            return lhs.Equals(rhs);
-        }
-
-        public static bool operator !=(NodeLayer lhs, NodeLayer rhs)
-        {
-            return !(lhs == rhs);
-        }
-
     }
 }

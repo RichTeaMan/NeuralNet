@@ -109,43 +109,5 @@ namespace RichTea.NeuralNetLib
                 .ToString();
         }
         
-        public override bool Equals(object that)
-        {
-            bool equal = false;
-            var thatNode = that as Node;
-            if (null != thatNode)
-            {
-                equal = new EqualsBuilder<Node>(this, that)
-                    .Append(Bias, thatNode.Bias)
-                    .Append(Weights, thatNode.Weights)
-                    .AreEqual;
-            }
-
-            return equal;
-        }
-        
-        public override int GetHashCode()
-        {
-            var hash = new HashCodeBuilder<Node>(this)
-                .Append(Bias)
-                .Append(Weights)
-                .HashCode;
-            return hash;
-        }
-
-        public static bool operator ==(Node lhs, Node rhs)
-        {
-            if (ReferenceEquals(lhs, null))
-            {
-                return ReferenceEquals(rhs, null);
-            }
-
-            return lhs.Equals(rhs);
-        }
-
-        public static bool operator !=(Node lhs, Node rhs)
-        {
-            return !(lhs == rhs);
-        }
     }
 }

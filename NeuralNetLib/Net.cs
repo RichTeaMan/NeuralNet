@@ -169,6 +169,19 @@ namespace RichTea.NeuralNetLib
             return results;
         }
 
+        /// <summary>
+        /// Calculates if a net is equivalent.
+        /// </summary>
+        /// <param name="net">Net.</param>
+        /// <returns>Is equivalent.</returns>
+        public bool IsEquivalent(Net net)
+        {
+            var serialNet = CreateSerialisedNet();
+            var otherSerialNet = net?.CreateSerialisedNet();
+
+            return serialNet.Equals(otherSerialNet);
+        }
+
         #endregion
 
         public override string ToString()
@@ -176,35 +189,6 @@ namespace RichTea.NeuralNetLib
             return new ToStringBuilder<Net>(this)
                 .Append(p => p.NodeLayers)
                 .ToString();
-        }
-
-        public override bool Equals(object that)
-        {
-            return new EqualsBuilder<Net>(this, that)
-                .Append(p => p.NodeLayers)
-                .AreEqual;
-        }
-
-        public override int GetHashCode()
-        {
-            return new HashCodeBuilder<Net>(this)
-                .Append(NodeLayers)
-                .HashCode;
-        }
-
-        public static bool operator ==(Net lhs, Net rhs)
-        {
-            if (ReferenceEquals(lhs, null))
-            {
-                return ReferenceEquals(rhs, null);
-            }
-
-            return lhs.Equals(rhs);
-        }
-
-        public static bool operator !=(Net lhs, Net rhs)
-        {
-            return !(lhs == rhs);
         }
 
     }
