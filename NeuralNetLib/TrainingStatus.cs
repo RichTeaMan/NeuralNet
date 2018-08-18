@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace RichTea.NeuralNetLib
 {
@@ -34,6 +32,14 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         public TimeSpan TotalTimeSpan { get; }
 
+        /// <summary>
+        /// Initialises training status.
+        /// </summary>
+        /// <param name="currentIteration">Current iteration.</param>
+        /// <param name="generationEvaluations">Generation evaluations.</param>
+        /// <param name="totalEvaluations">Total evaluations.</param>
+        /// <param name="generationTimeSpan">Generation time span.</param>
+        /// <param name="totalTimeSpan">Total time span.</param>
         public TrainingStatus(int currentIteration, int generationEvaluations, int totalEvaluations, TimeSpan generationTimeSpan, TimeSpan totalTimeSpan)
         {
             CurrentIteration = currentIteration;

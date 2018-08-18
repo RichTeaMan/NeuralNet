@@ -21,12 +21,12 @@ namespace RichTea.NeuralNetLib.Mutators
 
         public Net GenetateMutatedNeuralNet(Net firstParentNet, Net secondParentNet)
         {
-            if (firstParentNet.Inputs != secondParentNet.Inputs)
+            if (firstParentNet.InputCount != secondParentNet.InputCount)
             {
                 throw new ArgumentException("Nets must have the same number of inputs.");
             }
 
-            if (firstParentNet.Outputs != secondParentNet.Outputs)
+            if (firstParentNet.OutputCount != secondParentNet.OutputCount)
             {
                 throw new ArgumentException("Nets must have the same number of outputs.");
             }

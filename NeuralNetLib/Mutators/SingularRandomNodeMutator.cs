@@ -20,7 +20,7 @@ namespace RichTea.NeuralNetLib.Mutators
 
         public Net GenetateMutatedNeuralNet(Net parentNet)
         {
-            Net mutatedNet = new Net(parentNet.Inputs, parentNet.Outputs, parentNet.Layers);
+            Net mutatedNet = new Net(parentNet.InputCount, parentNet.OutputCount, parentNet.Layers);
             mutatedNet.SeedWeights(parentNet);
 
             int nodeIndexToMutate = _random.Next(parentNet.NodeCount);

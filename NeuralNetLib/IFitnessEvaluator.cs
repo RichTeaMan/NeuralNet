@@ -16,8 +16,9 @@ namespace RichTea.NeuralNetLib
         /// Ideally, evaluations should be as deterministic as possible and return the same
         /// result everytime for a given net.
         /// </summary>
-        /// <param name="competingNets"></param>
-        /// <param name="evaluatingNet"></param>
+        /// <param name="competingNets">Competing nets.</param>
+        /// <param name="evaluatingNet">Evaluating net.</param>
+        /// <param name="trainingStatus">Training status.</param>
         /// <returns></returns>
         int EvaluateNet(IReadOnlyList<Net> competingNets, Net evaluatingNet, TrainingStatus trainingStatus);
     }

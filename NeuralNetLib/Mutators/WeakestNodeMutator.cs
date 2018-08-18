@@ -21,7 +21,7 @@ namespace RichTea.NeuralNetLib.Mutators
 
         public Net GenetateMutatedNeuralNet(Net parentNet)
         {
-            Net mutatedNet = new Net(parentNet.Inputs, parentNet.Outputs, parentNet.Layers);
+            Net mutatedNet = new Net(parentNet.InputCount, parentNet.OutputCount, parentNet.Layers);
             mutatedNet.SeedWeights(parentNet);
 
             var mutatedNode = mutatedNet.Nodes.OrderBy(n => n.Bias + n.Weights.Sum()).First();

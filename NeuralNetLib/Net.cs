@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace RichTea.NeuralNetLib
 {
+    /// <summary>
+    /// Neural net.
+    /// </summary>
     public class Net
     {
         #region Properties
@@ -21,14 +24,32 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         public bool NormaliseOutput { get; set; } = false;
 
-        public NodeLayer[] NodeLayers { get; private set; }
-        public int Inputs { get; private set; }
-        public int Outputs { get; private set; }
+        /// <summary>
+        /// Gets node layers.
+        /// </summary>
+        public NodeLayer[] NodeLayers { get; }
+
+        /// <summary>
+        /// Gets input counts.
+        /// </summary>
+        public int InputCount { get; }
+
+        /// <summary>
+        /// Gets output counts.
+        /// </summary>
+        public int OutputCount { get; }
+
+        /// <summary>
+        /// Gets layer count.
+        /// </summary>
         public int Layers
         {
             get { return NodeLayers.Length; }
         }
 
+        /// <summary>
+        /// Gets node count.
+        /// </summary>
         public int NodeCount
         {
             get
@@ -37,6 +58,9 @@ namespace RichTea.NeuralNetLib
             }
         }
 
+        /// <summary>
+        /// Gets all nodes in the net.
+        /// </summary>
         public IEnumerable<Node> Nodes
         {
             get
@@ -57,26 +81,36 @@ namespace RichTea.NeuralNetLib
 
         #region Methods
 
-        public Net(int inputs, int outputs, int layers = 3)
+        /// <summary>
+        /// Initialises net.
+        /// </summary>
+        /// <param name="inputCount">Input count.</param>
+        /// <param name="outputCount">Output count.</param>
+        /// <param name="layerCount">Layer count.</param>
+        public Net(int inputCount, int outputCount, int layerCount = 3)
         {
-            if (layers < 2)
+            if (layerCount < 2)
             {
                 throw new ArgumentException("There must be at least 2 layers.");
             }
 
-            Inputs = inputs;
-            Outputs = outputs;
+            InputCount = inputCount;
+            OutputCount = outputCount;
 
-            NodeLayers = new NodeLayer[layers];
-            for (int i = 0; i < layers - 1; i++)
+            NodeLayers = new NodeLayer[layerCount];
+            for (int i = 0; i < layerCount - 1; i++)
             {
-                NodeLayers[i] = new NodeLayer(inputs, inputs);
+                NodeLayers[i] = new NodeLayer(inputCount, inputCount);
             }
-            NodeLayers[layers - 1] = new NodeLayer(inputs, outputs);
+            NodeLayers[layerCount - 1] = new NodeLayer(inputCount, outputCount);
 
-            normaliserNodes = Enumerable.Range(0, Inputs).Select(i => new NormaliserNode()).ToArray();
+            normaliserNodes = Enumerable.Range(0, InputCount).Select(i => new NormaliserNode()).ToArray();
         }
 
+        /// <summary>
+        /// Initialises net.
+        /// </summary>
+        /// <param name="nodeLayers">Node layers.</param>
         public Net(IEnumerable<NodeLayer> nodeLayers)
         {
             if (nodeLayers.Count() < 2)
@@ -84,14 +118,18 @@ namespace RichTea.NeuralNetLib
                 throw new ArgumentException("There must be at least 2 layers.");
             }
 
-            Inputs = nodeLayers.First().Inputs;
-            Outputs = nodeLayers.Last().Outputs;
+            InputCount = nodeLayers.First().InputCount;
+            OutputCount = nodeLayers.Last().OutputCount;
 
             NodeLayers = nodeLayers.ToArray();
 
-            normaliserNodes = Enumerable.Range(0, Inputs).Select(i => new NormaliserNode()).ToArray();
+            normaliserNodes = Enumerable.Range(0, InputCount).Select(i => new NormaliserNode()).ToArray();
         }
 
+        /// <summary>
+        /// Seeds weights randomly.
+        /// </summary>
+        /// <param name="random">Random.</param>
         public void SeedWeights(Random random)
         {
             foreach (var nodeLayer in NodeLayers)
@@ -100,6 +138,10 @@ namespace RichTea.NeuralNetLib
             }
         }
 
+        /// <summary>
+        /// Created a net for serialisation.
+        /// </summary>
+        /// <returns></returns>
         public SerialisedNet CreateSerialisedNet()
         {
             var serialisedNodeLayers = NodeLayers.Select(n => n.CreateSerialisedNodeLayer()).ToArray();
@@ -110,13 +152,17 @@ namespace RichTea.NeuralNetLib
             return serialisedNet;
         }
 
+        /// <summary>
+        /// Seed weights from another net.
+        /// </summary>
+        /// <param name="net">Net.</param>
         public void SeedWeights(Net net)
         {
-            if (net.Inputs != Inputs)
+            if (net.InputCount != InputCount)
             {
                 throw new ArgumentException("Net has incorrect number of inputs.");
             }
-            if (net.Outputs != Outputs)
+            if (net.OutputCount != OutputCount)
             {
                 throw new ArgumentException("Net has incorrect number of outputs.");
             }
@@ -127,9 +173,14 @@ namespace RichTea.NeuralNetLib
             }
         }
 
+        /// <summary>
+        /// Calculate result from inputs.
+        /// </summary>
+        /// <param name="inputs">Inputs.</param>
+        /// <returns>Result.</returns>
         public double[] Calculate(double[] inputs)
         {
-            if (Inputs != inputs.Length)
+            if (InputCount != inputs.Length)
             {
                 throw new ArgumentException("There is an incorrect number of Inputs.");
             }
@@ -137,7 +188,7 @@ namespace RichTea.NeuralNetLib
             double[] interStep = inputs.ToArray();
             if (NormaliseOutput)
             {
-                foreach (var i in Enumerable.Range(0, Inputs))
+                foreach (var i in Enumerable.Range(0, InputCount))
                 {
                     interStep[i] = normaliserNodes[i].Calculate(inputs[i]);
                 }
@@ -150,9 +201,16 @@ namespace RichTea.NeuralNetLib
             return interStep;
         }
 
+        /// <summary>
+        /// Calculates from inputs. SSE will be calculated from targets.
+        /// </summary>
+        /// <param name="inputs">Inputs.</param>
+        /// <param name="targets">Targets.</param>
+        /// <param name="sse">SSE.</param>
+        /// <returns>Resultrs.</returns>
         public double[] Calculate(double[] inputs, double[] targets, ref double sse)
         {
-            if (targets.Length != Outputs)
+            if (targets.Length != OutputCount)
             {
                 throw new ArgumentException("There is an incorrect number of Targets.");
             }
@@ -184,6 +242,10 @@ namespace RichTea.NeuralNetLib
 
         #endregion
 
+        /// <summary>
+        /// Converts net to a string.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return new ToStringBuilder<Net>(this)

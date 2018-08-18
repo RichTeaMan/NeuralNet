@@ -2,14 +2,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RichTea.NeuralNetLib
 {
+    /// <summary>
+    /// Factory for generating nets.
+    /// </summary>
     public class NetFactory
     {
 
+        /// <summary>
+        /// Generates a random net.
+        /// </summary>
+        /// <param name="inputCount">Input count.</param>
+        /// <param name="outputCount">Output count.</param>
+        /// <param name="random">Random.</param>
+        /// <returns>Net.</returns>
         public Net GenerateRandomNet(int inputCount, int outputCount, Random random)
         {
             Net net = new Net(inputCount, outputCount);
@@ -17,6 +25,14 @@ namespace RichTea.NeuralNetLib
             return net;
         }
 
+        /// <summary>
+        /// Generates a random net.
+        /// </summary>
+        /// <param name="inputCount">Input count.</param>
+        /// <param name="outputCount">Output count.</param>
+        /// <param name="hiddenLayers">Hidden layers.</param>
+        /// <param name="random">Random.</param>
+        /// <returns>Net.</returns>
         public Net GenerateRandomNet(int inputCount, int outputCount, int hiddenLayers, Random random)
         {
             Net net = new Net(inputCount, outputCount, hiddenLayers + 2);
@@ -24,12 +40,29 @@ namespace RichTea.NeuralNetLib
             return net;
         }
 
+        /// <summary>
+        /// Generates a list of random net.
+        /// </summary>
+        /// <param name="inputCount">Input count.</param>
+        /// <param name="outputCount">Output count.</param>
+        /// <param name="random">Random.</param>
+        /// <param name="netCount">Number of nets to generate.</param>
+        /// <returns>List of nets.</returns>
         public List<Net> GenerateRandomNetList(int inputCount, int outputCount, Random random, int netCount)
         {
             List<Net> netList = GenerateRandomNetList(inputCount, outputCount, 1, random, netCount);
             return netList;
         }
 
+        /// <summary>
+        /// Generates a list of random net.
+        /// </summary>
+        /// <param name="inputCount">Input count.</param>
+        /// <param name="outputCount">Output count.</param>
+        /// <param name="hiddenLayers">Hidden layers.</param>
+        /// <param name="random">Random.</param>
+        /// <param name="netCount">Number of nets to generate.</param>
+        /// <returns>List of nets.</returns>
         public List<Net> GenerateRandomNetList(int inputCount, int outputCount, int hiddenLayers, Random random, int netCount)
         {
             List<Net> netList = new List<Net>();
@@ -52,7 +85,7 @@ namespace RichTea.NeuralNetLib
         /// <returns></returns>
         public Net CreateMutatedNet(Net net, Random random, double deviation)
         {
-            Net mutatedNet = new Net(net.Inputs, net.Outputs, net.Layers);
+            Net mutatedNet = new Net(net.InputCount, net.OutputCount, net.Layers);
             mutatedNet.SeedWeights(net);
 
             foreach(var nodeLayer in mutatedNet.NodeLayers)

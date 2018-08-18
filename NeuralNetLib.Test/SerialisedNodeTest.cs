@@ -71,7 +71,7 @@ namespace RichTea.NeuralNetLib.Test
             var node = serialisedNode.CreateNode();
 
             Assert.AreEqual(bias, node.Bias);
-            Assert.AreEqual(weights.Length, node.Inputs);
+            Assert.AreEqual(weights.Length, node.InputCount);
             CollectionAssert.AreEquivalent(weights, node.Weights);
         }
     }

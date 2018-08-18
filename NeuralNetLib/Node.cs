@@ -5,11 +5,18 @@ using System.Linq;
 
 namespace RichTea.NeuralNetLib
 {
+
+    /// <summary>
+    /// A neural node.
+    /// </summary>
     public class Node
     {
         #region Properties
 
-        public int Inputs
+        /// <summary>
+        /// Gets input count.
+        /// </summary>
+        public int InputCount
         {
             get
             {
@@ -17,7 +24,14 @@ namespace RichTea.NeuralNetLib
             }
         }
 
+        /// <summary>
+        /// Gets or sets bias.
+        /// </summary>
         public double Bias { get; set; }
+
+        /// <summary>
+        /// Gets or sets weights.
+        /// </summary>
         public double[] Weights { get; set; }
 
         /// <summary>
@@ -43,19 +57,27 @@ namespace RichTea.NeuralNetLib
             Weights = new double[inputs];
         }
 
+        /// <summary>
+        /// Seeds weights randomly.
+        /// </summary>
+        /// <param name="random">Random.</param>
         public void SeedWeights(Random random)
         {
             Bias = random.NextDouble();
 
-            for (int i = 0; i < Inputs; i++)
+            for (int i = 0; i < InputCount; i++)
             {
                 Weights[i] = random.NextDouble();
             }
         }
 
+        /// <summary>
+        /// Seed weights from another node.
+        /// </summary>
+        /// <param name="node">Node.</param>
         public void SeedWeights(Node node)
         {
-            if (node.Inputs != Inputs)
+            if (node.InputCount != InputCount)
             {
                 throw new ArgumentException("Node has incorrect number of inputs.");
             }
@@ -65,15 +87,20 @@ namespace RichTea.NeuralNetLib
             Weights = node.Weights.ToArray();
         }
 
+        /// <summary>
+        /// Calculates result from inputs.
+        /// </summary>
+        /// <param name="inputs">Inputs.</param>
+        /// <returns>Result.</returns>
         public double Calculate(double[] inputs)
         {
-            if (Inputs != inputs.Length)
+            if (InputCount != inputs.Length)
             {
                 throw new ArgumentException("There is not a correct number of inputs.");
             }
 
             double result = Bias;
-            for (int i = 0; i < this.Inputs; i++)
+            for (int i = 0; i < this.InputCount; i++)
             {
                 result += inputs[i] * Weights[i];
             }
@@ -81,6 +108,13 @@ namespace RichTea.NeuralNetLib
             return Result;
         }
 
+        /// <summary>
+        /// Calculate.
+        /// </summary>
+        /// <param name="inputs">Inputs.</param>
+        /// <param name="target">Target.</param>
+        /// <param name="delta">Delta.</param>
+        /// <returns>Result.</returns>
         public double Calculate(double[] inputs, double target, ref double delta)
         {
             double result = Calculate(inputs);
@@ -88,6 +122,10 @@ namespace RichTea.NeuralNetLib
             return result;
         }
 
+        /// <summary>
+        /// Creates node for serialisation.
+        /// </summary>
+        /// <returns></returns>
         public SerialisedNode CreateSerialisedNode()
         {
             var serialisedNode = new SerialisedNode
@@ -101,6 +139,10 @@ namespace RichTea.NeuralNetLib
 
         #endregion
 
+        /// <summary>
+        /// Generates string representation of node.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return new ToStringBuilder<Node>(this)

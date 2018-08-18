@@ -154,8 +154,8 @@ namespace RichTea.NeuralNetLib.Test
             Assert.AreEqual(node2BBias, Net.NodeLayers[1].Nodes[1].Bias);
             CollectionAssert.AreEquivalent(node2BWeights, Net.NodeLayers[1].Nodes[1].Weights);
 
-            Assert.AreEqual(2, Net.Inputs);
-            Assert.AreEqual(2, Net.Outputs);
+            Assert.AreEqual(2, Net.InputCount);
+            Assert.AreEqual(2, Net.OutputCount);
         }
     }
 }
