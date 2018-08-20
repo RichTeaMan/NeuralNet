@@ -236,9 +236,12 @@ namespace RichTea.NeuralNetLib
 
                 // create serialised nets as they override equality methods so uniqueness can be verified.
                 var nextContestants = new HashSet<SerialisedNet>();
+                var nextContestantHashes = new HashSet<int>();
                 while (topContestantEnumerator.MoveNext())
                 {
-                    nextContestants.Add(topContestantEnumerator.Current.Net.CreateSerialisedNet());
+                    var serialNet = topContestantEnumerator.Current.Net.CreateSerialisedNet();
+                    nextContestants.Add(serialNet);
+                    nextContestantHashes.Add(serialNet.GetHashCode());
                 }
                 topContestantEnumerator = topContestantList.GetEnumerator();
                 while (nextContestants.Count < populationCount)
@@ -269,12 +272,14 @@ namespace RichTea.NeuralNetLib
                     }
 
                     var serialSpawnNet = spawnedNet.CreateSerialisedNet();
-                    if (!nextContestants.Contains(serialSpawnNet))
+                    if (!nextContestantHashes.Contains(serialSpawnNet.GetHashCode()))
                     {
                         nextContestants.Add(serialSpawnNet);
+                        nextContestantHashes.Add(serialSpawnNet.GetHashCode());
                     }
                 }
                 contestants = nextContestants.Select(n => n.CreateNet()).ToList();
+
                 contestants.ForEach(c => c.NormaliseOutput = NormaliseNets);
                 NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants, mutator));
 

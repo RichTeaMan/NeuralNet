@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichTea.NeuralNetLib.Mutators;
+using RichTea.NeuralNetLib.Serialisation;
 
 namespace RichTea.NeuralNetLib.Test
 {
@@ -221,5 +222,35 @@ namespace RichTea.NeuralNetLib.Test
 
             Assert.IsTrue(sse < 0.2, $"LogicNetANDORXOR SSE after {iterations} iterations is '{sse}'");
         }
+
+        /// <summary>
+        /// Tests if nets unique after spawning.
+        /// </summary>
+        [TestMethod]
+        public void SpawnedNetsAreUniqueTest()
+        {
+            int iterations = 1000;
+            int population = 100;
+
+            DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
+            DataSet _2 = new DataSet(new double[] { 0, 1 }, new double[] { 1 });    // 0 | 1 = 1
+            DataSet _3 = new DataSet(new double[] { 1, 0 }, new double[] { 1 });    // 1 | 0 = 1
+            DataSet _4 = new DataSet(new double[] { 1, 1 }, new double[] { 1 });    // 1 | 1 = 1
+            var dataSets = new[] { _1, _2, _3, _4 };
+
+            var fitnessEvaluator = new DatasetEvaluator(dataSets);
+            var trainer = new GeneticAlgorithmTrainer<DatasetEvaluator>(new Random(), fitnessEvaluator);
+
+            int iteration = 0;
+            trainer.NetsSpawned += (sender, netsSpawnedEventArgs) =>
+            {
+                var spawnedHashCount = netsSpawnedEventArgs.Nets.Select(n => n.CreateSerialisedNet().GetHashCode()).Distinct().Count();
+
+                Assert.AreEqual(population, spawnedHashCount, $"Iteration: {iteration}");
+            };
+
+            trainer.TrainAi(_1.InputCount, _1.OutputCount, 3, population, iterations);
+        }
+
     }
 }
