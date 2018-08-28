@@ -178,15 +178,14 @@ namespace RichTea.NeuralNetLib
             int iterationCount
         )
         {
-            List<Net> contestants = startingContestants.ToList();
-            NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants, null));
+            var mutatorEnumerator = Mutators.GetEnumerator();
+            List<Net> contestants = MutateContestants(populationCount, mutatorEnumerator, startingContestants.ToList());
 
             Stopwatch trainerStopwatch = new Stopwatch();
             trainerStopwatch.Start();
 
             int totalEvaluations = 0;
 
-            var mutatorEnumerator = Mutators.GetEnumerator();
             foreach (var currentIteration in Enumerable.Range(0, iterationCount))
             {
                 int netsProcessedInGeneration = 0;
@@ -224,64 +223,7 @@ namespace RichTea.NeuralNetLib
                 var orderedContestants = netEvaluations.OrderByDescending(ne => ne.FitnessScore).ToList();
 
                 IterationComplete?.Invoke(this, new IterationCompleteEventArgs(orderedContestants, new TrainingStatus(currentIteration, netsProcessedInGeneration, totalEvaluations, stopwatch.Elapsed, trainerStopwatch.Elapsed)));
-
-                if (!mutatorEnumerator.MoveNext())
-                {
-                    mutatorEnumerator.Reset();
-                    mutatorEnumerator.MoveNext();
-                }
-                var mutator = mutatorEnumerator.Current;
-                var topContestantList = orderedContestants.Take(populationCount / 10).ToList();
-                var topContestantEnumerator = topContestantList.GetEnumerator();
-
-                // create serialised nets as they override equality methods so uniqueness can be verified.
-                var nextContestants = new HashSet<SerialisedNet>();
-                var nextContestantHashes = new HashSet<int>();
-                while (topContestantEnumerator.MoveNext())
-                {
-                    var serialNet = topContestantEnumerator.Current.Net.CreateSerialisedNet();
-                    nextContestants.Add(serialNet);
-                    nextContestantHashes.Add(serialNet.GetHashCode());
-                }
-                topContestantEnumerator = topContestantList.GetEnumerator();
-                while (nextContestants.Count < populationCount)
-                {
-                    if (!topContestantEnumerator.MoveNext())
-                    {
-                        topContestantEnumerator = topContestantList.GetEnumerator();
-                        topContestantEnumerator.MoveNext();
-                    }
-                    var contestantI = topContestantEnumerator.Current;
-
-                    Net spawnedNet;
-
-                    if (mutator is INeuralNetOneParentMutator oneParentMutator)
-                    {
-                        spawnedNet = oneParentMutator.GenetateMutatedNeuralNet(contestantI.Net);
-                    }
-                    else if (mutator is INeuralNetTwoParentMutator twoParentMutator)
-                    {
-                        // get random second parent
-                        int pick = _random.Next(populationCount / 2);
-                        var secondNet = orderedContestants[pick].Net;
-                        spawnedNet = twoParentMutator.GenetateMutatedNeuralNet(contestantI.Net, secondNet);
-                    }
-                    else
-                    {
-                        throw new Exception("Unknown mutator interface.");
-                    }
-
-                    var serialSpawnNet = spawnedNet.CreateSerialisedNet();
-                    if (!nextContestantHashes.Contains(serialSpawnNet.GetHashCode()))
-                    {
-                        nextContestants.Add(serialSpawnNet);
-                        nextContestantHashes.Add(serialSpawnNet.GetHashCode());
-                    }
-                }
-                contestants = nextContestants.Select(n => n.CreateNet()).ToList();
-
-                contestants.ForEach(c => c.NormaliseOutput = NormaliseNets);
-                NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants, mutator));
+                contestants = MutateContestants(populationCount, mutatorEnumerator, orderedContestants.Select(c => c.Net).ToList());
 
             }
             trainerStopwatch.Stop();
@@ -289,5 +231,67 @@ namespace RichTea.NeuralNetLib
             return contestants;
         }
 
+        private List<Net> MutateContestants(int populationCount, IEnumerator<INeuralNetMutator> mutatorEnumerator, List<Net> orderedContestants)
+        {
+            List<Net> contestants;
+            if (!mutatorEnumerator.MoveNext())
+            {
+                mutatorEnumerator.Reset();
+                mutatorEnumerator.MoveNext();
+            }
+            var mutator = mutatorEnumerator.Current;
+            var topContestantList = orderedContestants.Take(populationCount / 10).ToList();
+            var topContestantEnumerator = topContestantList.GetEnumerator();
+
+            // create serialised nets as they override equality methods so uniqueness can be verified.
+            var nextContestants = new HashSet<SerialisedNet>();
+            var nextContestantHashes = new HashSet<int>();
+            while (topContestantEnumerator.MoveNext())
+            {
+                var serialNet = topContestantEnumerator.Current.CreateSerialisedNet();
+                nextContestants.Add(serialNet);
+                nextContestantHashes.Add(serialNet.GetHashCode());
+            }
+            topContestantEnumerator = topContestantList.GetEnumerator();
+            while (nextContestants.Count < populationCount)
+            {
+                if (!topContestantEnumerator.MoveNext())
+                {
+                    topContestantEnumerator = topContestantList.GetEnumerator();
+                    topContestantEnumerator.MoveNext();
+                }
+                var contestantI = topContestantEnumerator.Current;
+
+                Net spawnedNet;
+
+                if (mutator is INeuralNetOneParentMutator oneParentMutator)
+                {
+                    spawnedNet = oneParentMutator.GenetateMutatedNeuralNet(contestantI);
+                }
+                else if (mutator is INeuralNetTwoParentMutator twoParentMutator)
+                {
+                    // get random second parent
+                    int pick = _random.Next(populationCount / 2);
+                    var secondNet = orderedContestants[pick];
+                    spawnedNet = twoParentMutator.GenetateMutatedNeuralNet(contestantI, secondNet);
+                }
+                else
+                {
+                    throw new Exception("Unknown mutator interface.");
+                }
+
+                var serialSpawnNet = spawnedNet.CreateSerialisedNet();
+                if (!nextContestantHashes.Contains(serialSpawnNet.GetHashCode()))
+                {
+                    nextContestants.Add(serialSpawnNet);
+                    nextContestantHashes.Add(serialSpawnNet.GetHashCode());
+                }
+            }
+            contestants = nextContestants.Select(n => n.CreateNet()).ToList();
+
+            contestants.ForEach(c => c.NormaliseOutput = NormaliseNets);
+            NetsSpawned?.Invoke(this, new NetsSpawnedEventArgs(contestants, mutator));
+            return contestants;
+        }
     }
 }
