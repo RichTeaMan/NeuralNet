@@ -245,14 +245,13 @@ namespace RichTea.NeuralNetLib
 
             // create serialised nets as they override equality methods so uniqueness can be verified.
             var nextContestants = new HashSet<SerialisedNet>();
-            var nextContestantHashes = new HashSet<int>();
             while (topContestantEnumerator.MoveNext())
             {
                 var serialNet = topContestantEnumerator.Current.CreateSerialisedNet();
                 nextContestants.Add(serialNet);
-                nextContestantHashes.Add(serialNet.GetHashCode());
             }
             topContestantEnumerator = topContestantList.GetEnumerator();
+            int netCollisions = 0;
             while (nextContestants.Count < populationCount)
             {
                 if (!topContestantEnumerator.MoveNext())
@@ -281,10 +280,24 @@ namespace RichTea.NeuralNetLib
                 }
 
                 var serialSpawnNet = spawnedNet.CreateSerialisedNet();
-                if (!nextContestantHashes.Contains(serialSpawnNet.GetHashCode()))
+                if (!nextContestants.Contains(serialSpawnNet))
                 {
                     nextContestants.Add(serialSpawnNet);
-                    nextContestantHashes.Add(serialSpawnNet.GetHashCode());
+                }
+                else
+                {
+                    netCollisions++;
+                    if (netCollisions > 1000)
+                    {
+                        int netsToGenerate = populationCount - nextContestants.Count;
+                        Console.WriteLine($"There were too many net collions. Generating nets {netsToGenerate} randomly...");
+                        foreach(var i in Enumerable.Range(0, netsToGenerate))
+                        {
+                            var randomContestant = new Net(contestantI.InputCount, contestantI.OutputCount, contestantI.Layers);
+                            randomContestant.SeedWeights(_random);
+                            nextContestants.Add(randomContestant.CreateSerialisedNet());
+                        }
+                    }
                 }
             }
             contestants = nextContestants.Select(n => n.CreateNet()).ToList();
