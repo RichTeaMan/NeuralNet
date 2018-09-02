@@ -14,6 +14,9 @@ namespace RichTea.NeuralNetLib.Mutators
         /// <summary>
         /// Gets or sets how much a parameter can mutate.
         /// </summary>
+        /// <remarks>
+        /// Weights will be mutated by a random number between - and + Deviation.
+        /// </remarks>
         public double Deviation { get; set; } = 0.001;
 
         /// <summary>
@@ -21,15 +24,31 @@ namespace RichTea.NeuralNetLib.Mutators
         /// </summary>
         public int ParameterAmount { get; set; } = 1;
 
+        /// <summary>
+        /// Random.
+        /// </summary>
         private Random _random;
 
+        /// <summary>
+        /// Initialises random parameter mutator.
+        /// </summary>
+        /// <param name="random">Random.</param>
         public RandomParameterMutator(Random random)
         {
             _random = random;
         }
 
+        /// <summary>
+        /// Initialises random parameter mutator.
+        /// </summary>
         public RandomParameterMutator() : this(new Random()) { }
 
+        /// <summary>
+        /// Generates a new neural net with some weights randomly changed from the parent. Deviation controls how the range of mutated values.
+        /// Parameter amount controls how many weights will be adjusted.
+        /// </summary>
+        /// <param name="parentNet">Parent net.</param>
+        /// <returns>Child neural net.</returns>
         public Net GenetateMutatedNeuralNet(Net parentNet)
         {
             var serialisedParent = parentNet.CreateSerialisedNet();

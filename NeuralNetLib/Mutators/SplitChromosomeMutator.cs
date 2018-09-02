@@ -5,17 +5,44 @@ using RichTea.NeuralNetLib.Serialisation;
 
 namespace RichTea.NeuralNetLib.Mutators
 {
+    /// <summary>
+    /// Creates a new neural net by combining the weights of two parent neural nets.
+    /// </summary>
     public class SplitChromosomeMutator : INeuralNetTwoParentMutator
     {
+        /// <summary>
+        /// Random.
+        /// </summary>
         private Random _random;
 
+        /// <summary>
+        /// Initialises split chromosome mutator.
+        /// </summary>
+        /// <param name="random">Random.</param>
         public SplitChromosomeMutator(Random random)
         {
             _random = random;
         }
 
+        /// <summary>
+        /// Initialises split chromosome mutator.
+        /// </summary>
         public SplitChromosomeMutator() : this(new Random()) { }
 
+        /// <summary>
+        /// Creates a new neural net from two parents by combining their sequence of weights.
+        /// </summary>
+        /// <remarks>
+        /// This mutator splits at a random point in the parents' weight sequence, and then
+        /// joins the weights from the first parent to the second parent. These weights are then
+        /// used to create a child neural net. Parents must have the same number of nodes and weights.
+        /// </remarks>
+        /// Parent nets must have the same number of inputs, outputs and nodes.
+        /// <exception cref="ArgumentException">
+        /// </exception>
+        /// <param name="firstParentNet">First parent net.</param>
+        /// <param name="secondParentNet">Second parent net.</param>
+        /// <returns>Child parent net derived from the parents.</returns>
         public Net GenetateMutatedNeuralNet(Net firstParentNet, Net secondParentNet)
         {
             if (firstParentNet.InputCount != secondParentNet.InputCount)
