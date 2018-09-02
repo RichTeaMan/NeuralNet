@@ -244,9 +244,9 @@ namespace RichTea.NeuralNetLib.Test
             int iteration = 0;
             trainer.NetsSpawned += (sender, netsSpawnedEventArgs) =>
             {
-                var spawnedHashCount = netsSpawnedEventArgs.Nets.Select(n => n.CreateSerialisedNet().GetHashCode()).Distinct().Count();
+                var spawnedNetCount = netsSpawnedEventArgs.Nets.Select(n => n.CreateSerialisedNet()).Distinct().Count();
 
-                Assert.AreEqual(population, spawnedHashCount, $"Iteration: {iteration}");
+                Assert.AreEqual(population, spawnedNetCount, $"Iteration: {iteration}");
             };
 
             trainer.TrainAi(_1.InputCount, _1.OutputCount, 3, population, iterations);
