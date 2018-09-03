@@ -6,19 +6,34 @@ using RichTea.NeuralNetLib.Serialisation;
 namespace RichTea.NeuralNetLib.Mutators
 {
     /// <summary>
-    /// Creates a net from two parents by selecting a single node in series from them.
+    /// Creates a net from two parents by selecting a nodes randomly from the parents.
     /// </summary>
     public class CrossoverNodesMutator : INeuralNetTwoParentMutator
     {
         private Random _random;
 
+        /// <summary>
+        /// Initialies crossover nodes mutator.
+        /// </summary>
+        /// <param name="random"></param>
         public CrossoverNodesMutator(Random random)
         {
             _random = random;
         }
 
+        /// <summary>
+        /// Initialies crossover nodes mutator.
+        /// </summary>
         public CrossoverNodesMutator() : this(new Random()) { }
 
+        /// <summary>
+        /// Creates a new neural net from two parents by randomly selecting different nodes in order from them.
+        /// </summary>
+        /// <exception cref="ArgumentException">
+        /// </exception>
+        /// <param name="firstParentNet">First parent net.</param>
+        /// <param name="secondParentNet">Second parent net.</param>
+        /// <returns>Child parent net derived from the parents.</returns>
         public Net GenetateMutatedNeuralNet(Net firstParentNet, Net secondParentNet)
         {
             if (firstParentNet.InputCount != secondParentNet.InputCount)
