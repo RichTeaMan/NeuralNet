@@ -40,7 +40,7 @@ namespace RichTea.NeuralNetLib.Serialisation
 
         public override int GetHashCode()
         {
-            var hash = new HashCodeBuilder<SerialisedNode>(this)
+            var hash = new HashCodeBuilder()
                 .Append(Bias)
                 .Append(Weights)
                 .HashCode;

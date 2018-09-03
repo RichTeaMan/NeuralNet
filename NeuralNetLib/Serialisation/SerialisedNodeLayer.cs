@@ -1,5 +1,5 @@
 ﻿using RichTea.Common;
-using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RichTea.NeuralNetLib.Serialisation
@@ -32,9 +32,10 @@ namespace RichTea.NeuralNetLib.Serialisation
 
         public override int GetHashCode()
         {
-            return new HashCodeBuilder<SerialisedNodeLayer>(this)
-                .Append(Nodes)
-                .HashCode;
+            var hashCodeBuilder = new HashCodeBuilder()
+                   .Append(Nodes);
+
+            return hashCodeBuilder.HashCode;
         }
 
         public static bool operator ==(SerialisedNodeLayer lhs, SerialisedNodeLayer rhs)

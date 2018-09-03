@@ -1,6 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RichTea.NeuralNetLib.Mutators;
 using RichTea.NeuralNetLib.Serialisation;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace RichTea.NeuralNetLib.Test
@@ -19,12 +22,30 @@ namespace RichTea.NeuralNetLib.Test
         }
 
         [TestMethod]
+        public void DefaultNetHashCodeEqualsTest()
+        {
+            var a = new Net(3, 1);
+            var b = new Net(3, 1);
+
+            Assert.AreEqual(a.CreateSerialisedNet().GetHashCode(), b.CreateSerialisedNet().GetHashCode());
+        }
+
+        [TestMethod]
         public void DefaultNetNotEqualsTest()
         {
             var a = new Net(3, 1);
             var b = new Net(2, 1);
 
             Assert.AreNotEqual(a.CreateSerialisedNet(), b.CreateSerialisedNet());
+        }
+
+        [TestMethod]
+        public void DefaultNetHashCodeNotEqualsTest()
+        {
+            var a = new Net(3, 1);
+            var b = new Net(2, 1);
+
+            Assert.AreNotEqual(a.CreateSerialisedNet().GetHashCode(), b.CreateSerialisedNet().GetHashCode());
         }
 
         [TestMethod]
@@ -52,6 +73,33 @@ namespace RichTea.NeuralNetLib.Test
             b.SeedWeights(rand);
 
             Assert.AreNotEqual(a.CreateSerialisedNet(), b.CreateSerialisedNet());
+        }
+
+        [TestMethod]
+        public void SeededNetHashCodeEqualsTest()
+        {
+            var randA = new Random(5);
+            var randB = new Random(5);
+            var a = new Net(3, 1);
+            var b = new Net(3, 1);
+
+            a.SeedWeights(randA);
+            b.SeedWeights(randB);
+
+            Assert.AreEqual(a.CreateSerialisedNet().GetHashCode(), b.CreateSerialisedNet().GetHashCode());
+        }
+
+        [TestMethod]
+        public void SeededNetHashCodeNotEqualsTest()
+        {
+            var rand = new Random(5);
+            var a = new Net(3, 1);
+            var b = new Net(3, 1);
+
+            a.SeedWeights(rand);
+            b.SeedWeights(rand);
+
+            Assert.AreNotEqual(a.CreateSerialisedNet().GetHashCode(), b.CreateSerialisedNet().GetHashCode());
         }
 
         [TestMethod]
@@ -156,6 +204,69 @@ namespace RichTea.NeuralNetLib.Test
 
             Assert.AreEqual(2, Net.InputCount);
             Assert.AreEqual(2, Net.OutputCount);
+        }
+
+        [TestMethod]
+        public void HashCodeTest()
+        {
+            int count = 10000;
+            var hashList = new List<int>();
+            Random random = new Random(12);
+
+            // nets produced from this mutator sometimes have the same hashcode as their parent.
+            var weakestNodeMutator = new WeakestNodeMutator(random);
+
+            foreach(var i in Enumerable.Range(0, count))
+            {
+                Net net = new Net(5, 1, 3);
+                net.SeedWeights(random);
+
+                var serialNet = net.CreateSerialisedNet();
+                hashList.Add(serialNet.GetHashCode());
+
+                var mutatedNet = weakestNodeMutator.GenetateMutatedNeuralNet(net);
+
+                var mutSerialNet = mutatedNet.CreateSerialisedNet();
+                hashList.Add(mutSerialNet.GetHashCode());
+
+                if (serialNet.GetHashCode() == mutSerialNet.GetHashCode())
+                {
+                    var s = new
+                    {
+                        a = serialNet.NodeLayers.Select(n => n.GetHashCode()).ToArray(),
+                        b = mutSerialNet.NodeLayers.Select(n => n.GetHashCode()).ToArray()
+                    };
+
+                    for (int layerIndex = 0; layerIndex < serialNet.NodeLayers.Length; layerIndex++)
+                    {
+                        var oLayer = serialNet.NodeLayers[layerIndex];
+                        var mLayer = mutSerialNet.NodeLayers[layerIndex];
+
+                        if (oLayer != mLayer)
+                        {
+
+                            for (int nodeIndex = 0; nodeIndex < oLayer.Nodes.Length; nodeIndex++)
+                            {
+                                var oNode = oLayer.Nodes[nodeIndex];
+                                var mNode = mLayer.Nodes[nodeIndex];
+
+                                if (oNode != mNode)
+                                {
+                                    Debug.WriteLine("Different node in identical net hash found.");
+                                }
+                            }
+
+                            Debug.WriteLine("Different net layer in identical net hash found.");
+                        }
+                    }
+
+                    Debug.WriteLine("Identical net hash found.");
+                }
+            }
+
+            int uniqueHashes = hashList.Distinct().Count();
+
+            Assert.AreEqual(count * 2, uniqueHashes);
         }
     }
 }
