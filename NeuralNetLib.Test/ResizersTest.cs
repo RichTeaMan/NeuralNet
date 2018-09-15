@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichTea.NeuralNetLib.Resizers;
 using System;
+using System.Linq;
 
 namespace RichTea.NeuralNetLib.Test
 {
@@ -38,6 +39,15 @@ namespace RichTea.NeuralNetLib.Test
             // test layer count
             Assert.AreEqual(net.Layers, resizedNet.Layers);
 
+            // check non output layers have correct number of nodes
+            foreach (var layer in resizedNet.NodeLayers.Take(resizedNet.Layers - 1))
+            {
+                Assert.AreEqual(newNetInput, layer.Nodes.Length);
+            }
+
+            // checkout output layer has correct number of nodes
+            Assert.AreEqual(net.NodeLayers.Last().Nodes.Length, resizedNet.NodeLayers.Last().Nodes.Length);
+
             // test a calcuation can happen. we don't care about result
             var inputs = new double[newNetInput];
             resizedNet.Calculate(inputs);
@@ -73,9 +83,64 @@ namespace RichTea.NeuralNetLib.Test
             // test layer count
             Assert.AreEqual(net.Layers, resizedNet.Layers);
 
+            // check non output layers have correct number of nodes
+            foreach(var layer in resizedNet.NodeLayers.Take(resizedNet.Layers - 1))
+            {
+                Assert.AreEqual(newNetInput, layer.Nodes.Length);
+            }
+
+            // checkout output layer has correct number of nodes
+            Assert.AreEqual(net.NodeLayers.Last().Nodes.Length, resizedNet.NodeLayers.Last().Nodes.Length);
+
             // test a calcuation can happen. we don't care about result
             var inputs = new double[newNetInput];
             resizedNet.Calculate(inputs);
+        }
+
+        [TestMethod]
+        public void RandomInputResizerNoResizeTest()
+        {
+            int oldNetInput = 4;
+            int newNetInput = 4;
+
+            var random = new Random();
+
+            var randomInputResizer = new RandomInputResizer(random);
+
+            var net = new Net(oldNetInput, 1);
+            net.SeedWeights(random);
+
+            var serialNet = net.CreateSerialisedNet();
+
+            var resizedNet = randomInputResizer.ResizeInputs(net, newNetInput);
+
+
+            // test original net hasn't been modified
+            Assert.AreEqual(serialNet, net.CreateSerialisedNet());
+
+            // test input count
+            Assert.AreEqual(newNetInput, resizedNet.InputCount);
+
+            // test output count
+            Assert.AreEqual(net.OutputCount, resizedNet.OutputCount);
+
+            // test layer count
+            Assert.AreEqual(net.Layers, resizedNet.Layers);
+
+            // check non output layers have correct number of nodes
+            foreach (var layer in resizedNet.NodeLayers.Take(resizedNet.Layers - 1))
+            {
+                Assert.AreEqual(newNetInput, layer.Nodes.Length);
+            }
+
+            // checkout output layer has correct number of nodes
+            Assert.AreEqual(net.NodeLayers.Last().Nodes.Length, resizedNet.NodeLayers.Last().Nodes.Length);
+
+            // test a calcuation can happen. we don't care about result
+            var inputs = new double[newNetInput];
+            resizedNet.Calculate(inputs);
+
+            Assert.AreEqual(serialNet, resizedNet.CreateSerialisedNet());
         }
 
     }
