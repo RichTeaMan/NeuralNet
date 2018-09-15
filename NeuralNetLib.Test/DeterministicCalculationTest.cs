@@ -13,8 +13,7 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void DeterministicNetTest()
         {
-            Net Net = new Net(2, 1);
-            Net.SeedWeights(new Random());
+            Net Net = new Net(new Random(), 2, 1);
 
             DataSet dataset = new DataSet(new double[] { 0, 1 }, new double[] { 1 });    // 0 | 1 = 1
 
@@ -29,8 +28,7 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void MutatedDeterministicNetTest()
         {
-            Net Net = new Net(2, 1);
-            Net.SeedWeights(new Random());
+            Net Net = new Net(new Random(), 2, 1);
 
             DataSet dataset = new DataSet(new double[] { 0, 1 }, new double[] { 1 });    // 0 | 1 = 1
 
@@ -50,8 +48,7 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void DeterministicDatasetEvaluatorTest()
         {
-            Random random = new Random();
-            Net Net = new Net(2, 1);
+            Net Net = new Net(new Random(), 2, 1);
 
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
             DataSet _2 = new DataSet(new double[] { 0, 1 }, new double[] { 1 });    // 0 | 1 = 1
@@ -63,8 +60,7 @@ namespace RichTea.NeuralNetLib.Test
             {
                 List<double> results = new List<double>();
 
-                var net = new Net(2, 1);
-                net.SeedWeights(random);
+                Net net = new Net(new Random(), 2, 1);
                 double sse1 = 0;
                 foreach (var dataSet in dataSets)
                 {

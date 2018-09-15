@@ -24,11 +24,7 @@ namespace RichTea.NeuralNetLib.Serialisation
         /// <returns></returns>
         public Node CreateNode()
         {
-            var node = new Node(Weights.Length)
-            {
-                Weights = Weights.ToArray(),
-                Bias = Bias
-            };
+            var node = new Node(Bias, Weights);
             return node;
         }
 

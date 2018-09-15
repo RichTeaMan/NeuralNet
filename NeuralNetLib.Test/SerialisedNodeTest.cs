@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichTea.NeuralNetLib.Serialisation;
 using System;
+using System.Linq;
 
 namespace RichTea.NeuralNetLib.Test
 {
@@ -11,8 +12,10 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void DefaultNodeEqualsTest()
         {
-            var a = new Node(3);
-            var b = new Node(3);
+            var randA = new Random(5);
+            var randB = new Random(5);
+            var a = new Node(3, randA);
+            var b = new Node(3, randB);
 
             Assert.AreEqual(a.CreateSerialisedNode(), b.CreateSerialisedNode());
         }
@@ -20,8 +23,10 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void DefaultNodeNotEqualsTest()
         {
-            var a = new Node(3);
-            var b = new Node(2);
+            var randA = new Random(5);
+            var randB = new Random(5);
+            var a = new Node(3, randA);
+            var b = new Node(2, randB);
 
             Assert.AreNotEqual(a.CreateSerialisedNode(), b.CreateSerialisedNode());
         }
@@ -29,18 +34,16 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void SeededNodeEqualsTest()
         {
+
             var randA = new Random(5);
             var randB = new Random(5);
-            var a = new Node(3);
-            var b = new Node(3);
-
-            a.SeedWeights(randA);
-            b.SeedWeights(randB);
+            var a = new Node(3,randA);
+            var b = new Node(3,randB);
 
             Assert.AreEqual(a.CreateSerialisedNode(), b.CreateSerialisedNode());
 
             // Ensure weight arrays eqivalent but not the same reference.
-            CollectionAssert.AreEquivalent(a.Weights, b.Weights);
+            CollectionAssert.AreEquivalent(a.Weights.ToArray(), b.Weights.ToArray());
             ReferenceEquals(a.Weights, b.Weights);
         }
 
@@ -48,11 +51,8 @@ namespace RichTea.NeuralNetLib.Test
         public void SeededNodeNotEqualsTest()
         {
             var rand = new Random(5);
-            var a = new Node(3);
-            var b = new Node(3);
-
-            a.SeedWeights(rand);
-            b.SeedWeights(rand);
+            var a = new Node(3, rand);
+            var b = new Node(3, rand);
 
             Assert.AreNotEqual(a.CreateSerialisedNode(), b.CreateSerialisedNode());
         }
@@ -72,7 +72,7 @@ namespace RichTea.NeuralNetLib.Test
 
             Assert.AreEqual(bias, node.Bias);
             Assert.AreEqual(weights.Length, node.InputCount);
-            CollectionAssert.AreEquivalent(weights, node.Weights);
+            CollectionAssert.AreEquivalent(weights, node.Weights.ToArray());
         }
     }
 }

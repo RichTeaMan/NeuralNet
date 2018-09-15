@@ -56,7 +56,7 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void DatasetEvaluatorFitnessTest()
         {
-            Net Net = new Net(2, 1);
+            Net Net = new Net(new Random(), 2, 1);
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -74,14 +74,14 @@ namespace RichTea.NeuralNetLib.Test
 
             var fitnessScore1 = fitnessEvaluator.EvaluateNet(new[] { Net }.ToList(), Net, new TrainingStatus(0, 0, 0, new TimeSpan(), new TimeSpan()));
 
-            Assert.IsTrue(fitnessScore1 < 250000, $"Pre trained fitness score is not correct: {fitnessScore1}");
+            Assert.IsTrue(fitnessScore1 < 300000, $"Pre trained fitness score is not correct: {fitnessScore1}");
 
             int epoch = 1000;
-            double SSE = prop.Train(Net, epoch);
+            var backPropResult = prop.Train(Net, epoch);
 
-            Assert.IsTrue(SSE < 0.2, "LogicNetOR SSE after {0} epochs is '{1}'", epoch, SSE);
+            Assert.IsTrue(backPropResult.SSE < 0.2, "LogicNetOR SSE after {0} epochs is '{1}'", epoch, backPropResult.SSE);
 
-            var fitnessScore2 = fitnessEvaluator.EvaluateNet(new[] { Net }.ToList(), Net, new TrainingStatus(0, 0, 0, new TimeSpan(), new TimeSpan()));
+            var fitnessScore2 = fitnessEvaluator.EvaluateNet(new[] { backPropResult.Net }.ToList(), backPropResult.Net, new TrainingStatus(0, 0, 0, new TimeSpan(), new TimeSpan()));
 
             Assert.IsTrue(fitnessScore2 > 100000000, $"Post trained fitness score is not correct: {fitnessScore2}.");
         }
@@ -90,7 +90,7 @@ namespace RichTea.NeuralNetLib.Test
         public void DeterministicDatasetEvaluatorTest()
         {
             Random random = new Random();
-            Net Net = new Net(2, 1);
+            Net Net = new Net(new Random(), 2, 1);
 
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
             DataSet _2 = new DataSet(new double[] { 0, 1 }, new double[] { 1 });    // 0 | 1 = 1
@@ -102,8 +102,7 @@ namespace RichTea.NeuralNetLib.Test
 
             foreach(var i in Enumerable.Range(0, 1000))
             {
-                var net = new Net(2, 1);
-                net.SeedWeights(random);
+                Net net = new Net(new Random(), 2, 1);
 
                 var scores = Enumerable.Range(0, 1000).Select(index => fitnessEvaluator.EvaluateNet(null, net, null)).ToArray();
                 Assert.AreEqual(1, scores.Distinct().Count());

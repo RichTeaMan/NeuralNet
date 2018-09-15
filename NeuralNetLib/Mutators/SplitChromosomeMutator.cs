@@ -75,7 +75,7 @@ namespace RichTea.NeuralNetLib.Mutators
             {
                 List<SerialisedNode> nodesInLayer = new List<SerialisedNode>();
 
-                foreach (var nodeCount in Enumerable.Range(0, layer.Nodes.Length))
+                foreach (var nodeCount in Enumerable.Range(0, layer.Nodes.Count))
                 {
                     nodesInLayer.Add(childNodeStack.Pop());
                 }

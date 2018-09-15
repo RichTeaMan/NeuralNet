@@ -15,8 +15,8 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void DefaultNetEqualsTest()
         {
-            var a = new Net(3, 1);
-            var b = new Net(3, 1);
+            var a = new Net(new Random(5), 3, 1);
+            var b = new Net(new Random(5), 3, 1);
 
             Assert.AreEqual(a.CreateSerialisedNet(), b.CreateSerialisedNet());
         }
@@ -24,8 +24,8 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void DefaultNetHashCodeEqualsTest()
         {
-            var a = new Net(3, 1);
-            var b = new Net(3, 1);
+            var a = new Net(new Random(5), 3, 1);
+            var b = new Net(new Random(5), 3, 1);
 
             Assert.AreEqual(a.CreateSerialisedNet().GetHashCode(), b.CreateSerialisedNet().GetHashCode());
         }
@@ -33,8 +33,8 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void DefaultNetNotEqualsTest()
         {
-            var a = new Net(3, 1);
-            var b = new Net(2, 1);
+            var a = new Net(new Random(5), 3, 1);
+            var b = new Net(new Random(5), 2, 1);
 
             Assert.AreNotEqual(a.CreateSerialisedNet(), b.CreateSerialisedNet());
         }
@@ -42,8 +42,8 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void DefaultNetHashCodeNotEqualsTest()
         {
-            var a = new Net(3, 1);
-            var b = new Net(2, 1);
+            var a = new Net(new Random(5), 3, 1);
+            var b = new Net(new Random(5), 2, 1);
 
             Assert.AreNotEqual(a.CreateSerialisedNet().GetHashCode(), b.CreateSerialisedNet().GetHashCode());
         }
@@ -53,11 +53,8 @@ namespace RichTea.NeuralNetLib.Test
         {
             var randA = new Random(5);
             var randB = new Random(5);
-            var a = new Net(3, 1);
-            var b = new Net(3, 1);
-
-            a.SeedWeights(randA);
-            b.SeedWeights(randB);
+            var a = new Net(randA, 3, 1);
+            var b = new Net(randB, 3, 1);
 
             Assert.AreEqual(a.CreateSerialisedNet(), b.CreateSerialisedNet());
         }
@@ -66,11 +63,8 @@ namespace RichTea.NeuralNetLib.Test
         public void SeededNetNotEqualsTest()
         {
             var rand = new Random(5);
-            var a = new Net(3, 1);
-            var b = new Net(3, 1);
-
-            a.SeedWeights(rand);
-            b.SeedWeights(rand);
+            var a = new Net(rand, 3, 1);
+            var b = new Net(rand, 3, 1);
 
             Assert.AreNotEqual(a.CreateSerialisedNet(), b.CreateSerialisedNet());
         }
@@ -80,11 +74,8 @@ namespace RichTea.NeuralNetLib.Test
         {
             var randA = new Random(5);
             var randB = new Random(5);
-            var a = new Net(3, 1);
-            var b = new Net(3, 1);
-
-            a.SeedWeights(randA);
-            b.SeedWeights(randB);
+            var a = new Net(randA, 3, 1);
+            var b = new Net(randB, 3, 1);
 
             Assert.AreEqual(a.CreateSerialisedNet().GetHashCode(), b.CreateSerialisedNet().GetHashCode());
         }
@@ -93,11 +84,8 @@ namespace RichTea.NeuralNetLib.Test
         public void SeededNetHashCodeNotEqualsTest()
         {
             var rand = new Random(5);
-            var a = new Net(3, 1);
-            var b = new Net(3, 1);
-
-            a.SeedWeights(rand);
-            b.SeedWeights(rand);
+            var a = new Net(rand, 3, 1);
+            var b = new Net(rand, 3, 1);
 
             Assert.AreNotEqual(a.CreateSerialisedNet().GetHashCode(), b.CreateSerialisedNet().GetHashCode());
         }
@@ -106,11 +94,8 @@ namespace RichTea.NeuralNetLib.Test
         public void NetSeedWeightsTest()
         {
             var rand = new Random(5);
-            var a = new Net(6, 1);
-            var b = new Net(6, 1);
-
-            a.SeedWeights(rand);
-            b.SeedWeights(a);
+            var a = new Net(rand, 6, 1);
+            var b = new Net(a);
 
             Assert.AreEqual(a.CreateSerialisedNet(), b.CreateSerialisedNet());
         }
@@ -119,9 +104,7 @@ namespace RichTea.NeuralNetLib.Test
         public void SerialisedNetDoesNotMutateSourceTest()
         {
             var rand = new Random(5);
-            var net = new Net(3, 1);
-
-            net.SeedWeights(rand);
+            var net = new Net(rand, 3, 1);
 
             var firstNode = net.Nodes.First();
             double bias = firstNode.Bias;
@@ -193,14 +176,14 @@ namespace RichTea.NeuralNetLib.Test
             var Net = serialisedNet.CreateNet();
 
             Assert.AreEqual(node1ABias, Net.NodeLayers[0].Nodes[0].Bias);
-            CollectionAssert.AreEquivalent(node1AWeights, Net.NodeLayers[0].Nodes[0].Weights);
+            CollectionAssert.AreEquivalent(node1AWeights, Net.NodeLayers[0].Nodes[0].Weights.ToArray());
             Assert.AreEqual(node1BBias, Net.NodeLayers[0].Nodes[1].Bias);
-            CollectionAssert.AreEquivalent(node1BWeights, Net.NodeLayers[0].Nodes[1].Weights);
+            CollectionAssert.AreEquivalent(node1BWeights, Net.NodeLayers[0].Nodes[1].Weights.ToArray());
 
             Assert.AreEqual(node2ABias, Net.NodeLayers[1].Nodes[0].Bias);
-            CollectionAssert.AreEquivalent(node2AWeights, Net.NodeLayers[1].Nodes[0].Weights);
+            CollectionAssert.AreEquivalent(node2AWeights, Net.NodeLayers[1].Nodes[0].Weights.ToArray());
             Assert.AreEqual(node2BBias, Net.NodeLayers[1].Nodes[1].Bias);
-            CollectionAssert.AreEquivalent(node2BWeights, Net.NodeLayers[1].Nodes[1].Weights);
+            CollectionAssert.AreEquivalent(node2BWeights, Net.NodeLayers[1].Nodes[1].Weights.ToArray());
 
             Assert.AreEqual(2, Net.InputCount);
             Assert.AreEqual(2, Net.OutputCount);
@@ -218,8 +201,7 @@ namespace RichTea.NeuralNetLib.Test
 
             foreach(var i in Enumerable.Range(0, count))
             {
-                Net net = new Net(5, 1, 3);
-                net.SeedWeights(random);
+                Net net = new Net(random, 5, 1, 3);
 
                 var serialNet = net.CreateSerialisedNet();
                 hashList.Add(serialNet.GetHashCode());

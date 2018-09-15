@@ -17,7 +17,7 @@ namespace RichTea.NeuralNetLib
         /// <summary>
         /// Gets nodes in the layer.
         /// </summary>
-        public Node[] Nodes { get; }
+        public IReadOnlyList<Node> Nodes { get; }
 
         /// <summary>
         /// Gets input count.
@@ -29,7 +29,7 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         public int OutputCount
         {
-            get { return Nodes.Length; }
+            get { return Nodes.Count; }
         }
 
         #endregion
@@ -41,7 +41,7 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         /// <param name="inputCount">Input count.</param>
         /// <param name="outputCount">Output count.</param>
-        public NodeLayer(int inputCount, int outputCount)
+        public NodeLayer(int inputCount, int outputCount, Random random)
         {
             if (inputCount == 0)
             {
@@ -55,11 +55,7 @@ namespace RichTea.NeuralNetLib
 
             InputCount = inputCount;
 
-            Nodes = new Node[outputCount];
-            for (int i = 0; i < outputCount; i++)
-            {
-                Nodes[i] = new Node(inputCount);
-            }
+            Nodes = Enumerable.Range(0, outputCount).Select(i => new Node(inputCount, random)).ToList();
         }
 
         /// <summary>
@@ -68,26 +64,14 @@ namespace RichTea.NeuralNetLib
         /// <param name="nodes">Nodes.</param>
         public NodeLayer(IEnumerable<Node> nodes)
         {
-            if (nodes.Select(n => n.Weights.Length).Distinct().Count() != 1)
+            if (nodes.Select(n => n.Weights.Count).Distinct().Count() != 1)
             {
                 throw new ArgumentException("Nodes in a node layer must have the same number of inputs.");
             }
 
-            InputCount = nodes.Select(n => n.Weights.Length).First();
+            InputCount = nodes.Select(n => n.Weights.Count).First();
 
             Nodes = nodes.ToArray();
-        }
-
-        /// <summary>
-        /// Seeds weights randomly.
-        /// </summary>
-        /// <param name="random">Random.</param>
-        public void SeedWeights(Random random)
-        {
-            foreach(var node in Nodes)
-            {
-                node.SeedWeights(random);
-            }
         }
 
         /// <summary>
@@ -102,27 +86,6 @@ namespace RichTea.NeuralNetLib
                 Nodes = serialisedNodes
             };
             return serialisedNodeLayer;
-        }
-
-        /// <summary>
-        /// Seeds weights from another node layer.
-        /// </summary>
-        /// <param name="nodeLayer"></param>
-        public void SeedWeights(NodeLayer nodeLayer)
-        {
-            if (nodeLayer.InputCount != InputCount)
-            {
-                throw new ArgumentException("NodeLayer has incorrect number of inputs.");
-            }
-            if (nodeLayer.OutputCount != OutputCount)
-            {
-                throw new ArgumentException("NodeLayer has incorrect number of outputs.");
-            }
-
-            for (int i = 0; i < Nodes.Length; i++)
-            {
-                Nodes[i].SeedWeights(nodeLayer.Nodes[i]);
-            }
         }
 
         /// <summary>

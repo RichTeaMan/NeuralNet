@@ -3,8 +3,6 @@ using RichTea.NeuralNetLib.Serialisation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RichTea.NeuralNetLib
 {
@@ -27,7 +25,7 @@ namespace RichTea.NeuralNetLib
         /// <summary>
         /// Gets node layers.
         /// </summary>
-        public NodeLayer[] NodeLayers { get; }
+        public IReadOnlyList<NodeLayer> NodeLayers { get; }
 
         /// <summary>
         /// Gets input counts.
@@ -44,7 +42,7 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         public int Layers
         {
-            get { return NodeLayers.Length; }
+            get { return NodeLayers.Count; }
         }
 
         /// <summary>
@@ -54,7 +52,7 @@ namespace RichTea.NeuralNetLib
         {
             get
             {
-                return NodeLayers.Sum(nl => nl.Nodes.Length);
+                return NodeLayers.Sum(nl => nl.Nodes.Count);
             }
         }
 
@@ -75,7 +73,7 @@ namespace RichTea.NeuralNetLib
             }
         }
 
-        private NormaliserNode[] normaliserNodes;
+        private readonly NormaliserNode[] normaliserNodes;
 
         #endregion
 
@@ -87,7 +85,7 @@ namespace RichTea.NeuralNetLib
         /// <param name="inputCount">Input count.</param>
         /// <param name="outputCount">Output count.</param>
         /// <param name="layerCount">Layer count.</param>
-        public Net(int inputCount, int outputCount, int layerCount = 3)
+        public Net(Random random, int inputCount, int outputCount, int layerCount = 3)
         {
             if (layerCount < 2)
             {
@@ -97,12 +95,14 @@ namespace RichTea.NeuralNetLib
             InputCount = inputCount;
             OutputCount = outputCount;
 
-            NodeLayers = new NodeLayer[layerCount];
+            var nodeLayers = new NodeLayer[layerCount];
             for (int i = 0; i < layerCount - 1; i++)
             {
-                NodeLayers[i] = new NodeLayer(inputCount, inputCount);
+                nodeLayers[i] = new NodeLayer(inputCount, inputCount, random);
             }
-            NodeLayers[layerCount - 1] = new NodeLayer(inputCount, outputCount);
+            nodeLayers[layerCount - 1] = new NodeLayer(inputCount, outputCount, random);
+
+            NodeLayers = nodeLayers;
 
             normaliserNodes = Enumerable.Range(0, InputCount).Select(i => new NormaliserNode()).ToArray();
         }
@@ -127,16 +127,10 @@ namespace RichTea.NeuralNetLib
         }
 
         /// <summary>
-        /// Seeds weights randomly.
+        /// Clones from another net.
         /// </summary>
-        /// <param name="random">Random.</param>
-        public void SeedWeights(Random random)
-        {
-            foreach (var nodeLayer in NodeLayers)
-            {
-                nodeLayer.SeedWeights(random);
-            }
-        }
+        /// <param name="net">Net.</param>
+        public Net(Net net) : this(net.NodeLayers) { }
 
         /// <summary>
         /// Created a net for serialisation.
@@ -150,27 +144,6 @@ namespace RichTea.NeuralNetLib
                 NodeLayers = serialisedNodeLayers
             };
             return serialisedNet;
-        }
-
-        /// <summary>
-        /// Seed weights from another net.
-        /// </summary>
-        /// <param name="net">Net.</param>
-        public void SeedWeights(Net net)
-        {
-            if (net.InputCount != InputCount)
-            {
-                throw new ArgumentException("Net has incorrect number of inputs.");
-            }
-            if (net.OutputCount != OutputCount)
-            {
-                throw new ArgumentException("Net has incorrect number of outputs.");
-            }
-
-            for (int i = 0; i < NodeLayers.Length; i++)
-            {
-                NodeLayers[i].SeedWeights(net.NodeLayers[i]);
-            }
         }
 
         /// <summary>

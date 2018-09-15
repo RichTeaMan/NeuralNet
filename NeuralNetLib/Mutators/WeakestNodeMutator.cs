@@ -1,4 +1,5 @@
 ﻿using RichTea.Common.Extensions;
+using RichTea.NeuralNetLib.Serialisation;
 using System;
 using System.Linq;
 
@@ -35,11 +36,12 @@ namespace RichTea.NeuralNetLib.Mutators
         /// <returns>Child neural net.</returns>
         public Net GenetateMutatedNeuralNet(Net parentNet)
         {
-            Net mutatedNet = new Net(parentNet.InputCount, parentNet.OutputCount, parentNet.Layers);
-            mutatedNet.SeedWeights(parentNet);
+            var serialNet = parentNet.CreateSerialisedNet();
 
-            var mutatedNode = mutatedNet.Nodes.OrderBy(n => n.Bias + n.Weights.Sum()).First();
+            var mutatedNode = serialNet.Nodes().OrderBy(n => n.Bias + n.Weights.Sum()).First();
             mutatedNode.SeedWeights(_random);
+
+            var mutatedNet = serialNet.CreateNet();
             return mutatedNet;
         }
     }

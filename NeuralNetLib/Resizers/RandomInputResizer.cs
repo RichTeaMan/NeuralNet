@@ -75,13 +75,8 @@ namespace RichTea.NeuralNetLib.Resizers
                 // create new codes to match inputs except for output layer
                 if (newNodes.Count < layerInputs && layer != serialNet.NodeLayers.Last())
                 {
-                    var extraNodes = Enumerable.Range(0, layerInputs - newNodes.Count).Select(i => new Node(layerInputs)).ToList();
-                    foreach(var extraNode in extraNodes)
-                    {
-                        extraNode.SeedWeights(_random);
-                    }
-
-                    newNodes.AddRange(extraNodes.Select(n => n.CreateSerialisedNode()));
+                    var extraNodes = Enumerable.Range(0, layerInputs - newNodes.Count).Select(i => new Node(layerInputs, _random).CreateSerialisedNode()).ToList();
+                    newNodes.AddRange(extraNodes);
                 }
 
                 var newLayer = new SerialisedNodeLayer()

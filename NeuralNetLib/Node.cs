@@ -1,6 +1,7 @@
 ﻿using RichTea.Common;
 using RichTea.NeuralNetLib.Serialisation;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RichTea.NeuralNetLib
@@ -20,19 +21,19 @@ namespace RichTea.NeuralNetLib
         {
             get
             {
-                return Weights.Length;
+                return Weights.Count;
             }
         }
 
         /// <summary>
-        /// Gets or sets bias.
+        /// Gets bias.
         /// </summary>
-        public double Bias { get; set; }
+        public double Bias { get; }
 
         /// <summary>
-        /// Gets or sets weights.
+        /// Gets weights.
         /// </summary>
-        public double[] Weights { get; set; }
+        public IReadOnlyList<double> Weights { get; }
 
         /// <summary>
         /// Gets the result of the last calculation.
@@ -47,41 +48,34 @@ namespace RichTea.NeuralNetLib
         /// Constructs the node with random values for the weights and bias.
         /// </summary>
         /// <param name="inputs">The number of inputs the Node should have.</param>
-        public Node(int inputs)
+        public Node(int inputs, Random random)
         {
             if (inputs == 0)
             {
-                throw new ArgumentException("A NodeLayer must have at least one input");
+                throw new ArgumentException("A Node must have at least one input");
             }
 
-            Weights = new double[inputs];
-        }
-
-        /// <summary>
-        /// Seeds weights randomly.
-        /// </summary>
-        /// <param name="random">Random.</param>
-        public void SeedWeights(Random random)
-        {
             Bias = random.NextDouble();
-
-            for (int i = 0; i < InputCount; i++)
-            {
-                Weights[i] = random.NextDouble();
-            }
+            Weights = Enumerable.Range(0, inputs).Select(i => random.NextDouble()).ToArray();
         }
 
         /// <summary>
-        /// Seed weights from another node.
+        /// Initialises node from given weights and bias.
+        /// </summary>
+        ///<param name="bias">Bias.</param>
+        ///<param name="weights">Weights.</param>
+        public Node(double bias, IEnumerable<double> weights)
+        {
+            Bias = bias;
+            Weights = weights.ToArray();
+        }
+
+        /// <summary>
+        /// Clones another node
         /// </summary>
         /// <param name="node">Node.</param>
-        public void SeedWeights(Node node)
+        public Node(Node node)
         {
-            if (node.InputCount != InputCount)
-            {
-                throw new ArgumentException("Node has incorrect number of inputs.");
-            }
-
             Bias = node.Bias;
             // ToArray() to ensure the same array instance is not reused.
             Weights = node.Weights.ToArray();

@@ -30,8 +30,7 @@ namespace RichTea.NeuralNetLib.Test
                 randomParameterMutator,
             };
 
-            var net = new Net(3, 1);
-            net.SeedWeights(random);
+            var net = new Net(random, 3, 1);
 
             var serialNet = net.CreateSerialisedNet();
 
@@ -58,12 +57,10 @@ namespace RichTea.NeuralNetLib.Test
                 crossoverNodesMutator,
             };
 
-            var net1 = new Net(3, 1);
-            net1.SeedWeights(random);
+            var net1 = new Net(random, 3, 1);
             var serialNet1 = net1.CreateSerialisedNet();
 
-            var net2 = new Net(3, 1);
-            net2.SeedWeights(random);
+            var net2 = new Net(random, 3, 1);
             var serialNet2 = net2.CreateSerialisedNet();
 
             foreach (var mutator in mutators)

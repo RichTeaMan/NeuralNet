@@ -293,8 +293,7 @@ namespace RichTea.NeuralNetLib
                         Console.WriteLine($"There were too many net collions. Generating nets {netsToGenerate} randomly...");
                         foreach(var i in Enumerable.Range(0, netsToGenerate))
                         {
-                            var randomContestant = new Net(contestantI.InputCount, contestantI.OutputCount, contestantI.Layers);
-                            randomContestant.SeedWeights(_random);
+                            var randomContestant = new Net(_random, contestantI.InputCount, contestantI.OutputCount, contestantI.Layers);
                             nextContestants.Add(randomContestant.CreateSerialisedNet());
                         }
                     }

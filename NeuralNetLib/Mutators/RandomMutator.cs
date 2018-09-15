@@ -42,10 +42,10 @@ namespace RichTea.NeuralNetLib.Mutators
         /// <returns>Child neural net.</returns>
         public Net GenetateMutatedNeuralNet(Net parentNet)
         {
-            Net mutatedNet = new Net(parentNet.InputCount, parentNet.OutputCount, parentNet.Layers);
-            mutatedNet.SeedWeights(parentNet);
 
-            foreach (var nodeLayer in mutatedNet.NodeLayers)
+            var serialisedNet = parentNet.CreateSerialisedNet();
+
+            foreach (var nodeLayer in serialisedNet.NodeLayers)
             {
                 foreach (var node in nodeLayer.Nodes)
                 {
@@ -56,6 +56,7 @@ namespace RichTea.NeuralNetLib.Mutators
                     }
                 }
             }
+            var mutatedNet = serialisedNet.CreateNet();
             return mutatedNet;
         }
     }

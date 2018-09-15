@@ -20,8 +20,7 @@ namespace RichTea.NeuralNetLib
         /// <returns>Net.</returns>
         public Net GenerateRandomNet(int inputCount, int outputCount, Random random)
         {
-            Net net = new Net(inputCount, outputCount);
-            net.SeedWeights(random);
+            Net net = new Net(random, inputCount, outputCount);
             return net;
         }
 
@@ -35,8 +34,7 @@ namespace RichTea.NeuralNetLib
         /// <returns>Net.</returns>
         public Net GenerateRandomNet(int inputCount, int outputCount, int hiddenLayers, Random random)
         {
-            Net net = new Net(inputCount, outputCount, hiddenLayers + 2);
-            net.SeedWeights(random);
+            Net net = new Net(random, inputCount, outputCount, hiddenLayers + 2);
             return net;
         }
 
@@ -83,12 +81,12 @@ namespace RichTea.NeuralNetLib
         /// <param name="random">Random.</param>
         /// <param name="deviation">Deviation to muate by.</param>
         /// <returns></returns>
+        [Obsolete("Use RandomMutator")]
         public Net CreateMutatedNet(Net net, Random random, double deviation)
         {
-            Net mutatedNet = new Net(net.InputCount, net.OutputCount, net.Layers);
-            mutatedNet.SeedWeights(net);
+            var serialisedNet = net.CreateSerialisedNet();
 
-            foreach(var nodeLayer in mutatedNet.NodeLayers)
+            foreach(var nodeLayer in serialisedNet.NodeLayers)
             {
                 foreach(var node in nodeLayer.Nodes)
                 {
@@ -99,6 +97,7 @@ namespace RichTea.NeuralNetLib
                     }
                 }
             }
+            var mutatedNet = serialisedNet.CreateNet();
             return mutatedNet;
         }
 

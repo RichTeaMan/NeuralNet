@@ -19,8 +19,7 @@ namespace RichTea.NeuralNetLib.Test
 
             var randomInputResizer = new RandomInputResizer(random);
 
-            var net = new Net(oldNetInput, 1);
-            net.SeedWeights(random);
+            var net = new Net(random, oldNetInput, 1);
 
             var serialNet = net.CreateSerialisedNet();
 
@@ -42,11 +41,11 @@ namespace RichTea.NeuralNetLib.Test
             // check non output layers have correct number of nodes
             foreach (var layer in resizedNet.NodeLayers.Take(resizedNet.Layers - 1))
             {
-                Assert.AreEqual(newNetInput, layer.Nodes.Length);
+                Assert.AreEqual(newNetInput, layer.Nodes.Count);
             }
 
             // checkout output layer has correct number of nodes
-            Assert.AreEqual(net.NodeLayers.Last().Nodes.Length, resizedNet.NodeLayers.Last().Nodes.Length);
+            Assert.AreEqual(net.NodeLayers.Last().Nodes.Count, resizedNet.NodeLayers.Last().Nodes.Count);
 
             // test a calcuation can happen. we don't care about result
             var inputs = new double[newNetInput];
@@ -63,8 +62,7 @@ namespace RichTea.NeuralNetLib.Test
 
             var randomInputResizer = new RandomInputResizer(random);
 
-            var net = new Net(oldNetInput, 1);
-            net.SeedWeights(random);
+            var net = new Net(random, oldNetInput, 1);
 
             var serialNet = net.CreateSerialisedNet();
 
@@ -86,11 +84,11 @@ namespace RichTea.NeuralNetLib.Test
             // check non output layers have correct number of nodes
             foreach(var layer in resizedNet.NodeLayers.Take(resizedNet.Layers - 1))
             {
-                Assert.AreEqual(newNetInput, layer.Nodes.Length);
+                Assert.AreEqual(newNetInput, layer.Nodes.Count);
             }
 
             // checkout output layer has correct number of nodes
-            Assert.AreEqual(net.NodeLayers.Last().Nodes.Length, resizedNet.NodeLayers.Last().Nodes.Length);
+            Assert.AreEqual(net.NodeLayers.Last().Nodes.Count, resizedNet.NodeLayers.Last().Nodes.Count);
 
             // test a calcuation can happen. we don't care about result
             var inputs = new double[newNetInput];
@@ -107,8 +105,7 @@ namespace RichTea.NeuralNetLib.Test
 
             var randomInputResizer = new RandomInputResizer(random);
 
-            var net = new Net(oldNetInput, 1);
-            net.SeedWeights(random);
+            var net = new Net(random, oldNetInput, 1);
 
             var serialNet = net.CreateSerialisedNet();
 
@@ -130,11 +127,11 @@ namespace RichTea.NeuralNetLib.Test
             // check non output layers have correct number of nodes
             foreach (var layer in resizedNet.NodeLayers.Take(resizedNet.Layers - 1))
             {
-                Assert.AreEqual(newNetInput, layer.Nodes.Length);
+                Assert.AreEqual(newNetInput, layer.Nodes.Count);
             }
 
             // checkout output layer has correct number of nodes
-            Assert.AreEqual(net.NodeLayers.Last().Nodes.Length, resizedNet.NodeLayers.Last().Nodes.Length);
+            Assert.AreEqual(net.NodeLayers.Last().Nodes.Count, resizedNet.NodeLayers.Last().Nodes.Count);
 
             // test a calcuation can happen. we don't care about result
             var inputs = new double[newNetInput];

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RichTea.NeuralNetLib.Serialisation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -73,14 +74,17 @@ namespace RichTea.NeuralNetLib
                 throw new ArgumentException("The supplied DataSet has the incorrect number of data elements.");
         }
 
-        private void AdjustNode(Node Node, double[] Inputs, double Delta)
+        private Node AdjustNode(Node node, double[] Inputs, double Delta)
         {
-            Node.Bias += Delta;
-            for (int w = 0; w < Node.InputCount; w++)
+            var serialNode = node.CreateSerialisedNode();
+            serialNode.Bias += Delta;
+            for (int w = 0; w < serialNode.Weights.Length; w++)
             {
                 double delta = Delta * Inputs[w];
-                Node.Weights[w] += delta;
+                serialNode.Weights[w] += delta;
             }
+
+            return serialNode.CreateNode();
         }
         
         /// <summary>
@@ -89,7 +93,7 @@ namespace RichTea.NeuralNetLib
         /// <param name="node">Node to train.</param>
         /// <param name="epochCount">Number of epochs to train for.</param>
         /// <returns>Sum of the square of the errors (SSE).</returns>
-        public double Train(Node node, int epochCount = 1000)
+        public BackPropagationResult<Node> Train(Node node, int epochCount = 1000)
         {
             if (epochCount < 1)
                 throw new ArgumentException("At least 1 epoch is required.");
@@ -103,15 +107,16 @@ namespace RichTea.NeuralNetLib
             if (OutputCount != 1)
                 throw new ArgumentException("An Node only supports 1 output.");
 
+            var epochNode = node;
             for (int i = 0; i < epochCount; i++)
             {
                 foreach (var dataSet in DataSets)
                 {
                     double delta = 0;
-                    double result = node.Calculate(dataSet.Inputs, dataSet.Outputs.First(), ref delta);
+                    double result = epochNode.Calculate(dataSet.Inputs, dataSet.Outputs.First(), ref delta);
                     
                     // weight delta = learning rate * error * weight
-                    AdjustNode(node, dataSet.Inputs, LearningRate * delta);
+                    epochNode = AdjustNode(epochNode, dataSet.Inputs, LearningRate * delta);
                     
                 }
             }
@@ -119,10 +124,11 @@ namespace RichTea.NeuralNetLib
             double SSE = 0;
             foreach (var dataSet in DataSets)
             {
-                double result = node.Calculate(dataSet.Inputs);
+                double result = epochNode.Calculate(dataSet.Inputs);
                 SSE += Math.Pow(dataSet.Outputs.First() - result, 2);
             }
-            return SSE;
+            var backPropagationResult = new BackPropagationResult<Node>(epochNode, SSE);
+            return backPropagationResult;
         }
 
         /// <summary>
@@ -131,7 +137,7 @@ namespace RichTea.NeuralNetLib
         /// <param name="nodeLayer">Node layer to train.</param>
         /// <param name="epochCount">Number of epochs to train for.</param>
         /// <returns>Sum of the square of the errors (SSE).</returns>
-        public double Train(NodeLayer nodeLayer, int epochCount = 1000)
+        public BackPropagationResult<NodeLayer> Train(NodeLayer nodeLayer, int epochCount = 1000)
         {
             if (epochCount < 1)
                 throw new ArgumentException("At least 1 epoch is required.");
@@ -145,17 +151,21 @@ namespace RichTea.NeuralNetLib
             if (OutputCount != nodeLayer.OutputCount)
                 throw new ArgumentException("The given NodeLayer does not have the same number of Outputs as the DataSets.");
 
+            var epochNodeLayer = nodeLayer;
             for (int i = 0; i < epochCount; i++)
             {
-                for (int n = 0; n < nodeLayer.OutputCount; n++)
+                for (int n = 0; n < epochNodeLayer.OutputCount; n++)
                 {
                     foreach(var dataSet in DataSets)
                     {
                         double error = 0;
-                        nodeLayer.Nodes[n].Calculate(dataSet.Inputs, dataSet.Outputs[n], ref error);
+                        epochNodeLayer.Nodes[n].Calculate(dataSet.Inputs, dataSet.Outputs[n], ref error);
 
                         double delta = error * LearningRate;
-                        AdjustNode(nodeLayer.Nodes[n], dataSet.Inputs, delta);
+
+                        var newNodes = epochNodeLayer.Nodes.Select(node => AdjustNode(node, dataSet.Inputs, delta)).ToList();
+
+                        epochNodeLayer = new NodeLayer(newNodes);
                     }
                 }
             }
@@ -164,10 +174,11 @@ namespace RichTea.NeuralNetLib
             foreach (var dataSet in DataSets)
             {
                 double error = 0;
-                nodeLayer.Calculate(dataSet.Inputs, dataSet.Outputs, ref error);
+                epochNodeLayer.Calculate(dataSet.Inputs, dataSet.Outputs, ref error);
                 SSE += Math.Pow(error, 2);
             }
-            return SSE;
+            var backPropagationResult = new BackPropagationResult<NodeLayer>(epochNodeLayer, SSE);
+            return backPropagationResult;
         }
 
         /// <summary>
@@ -176,52 +187,69 @@ namespace RichTea.NeuralNetLib
         /// <param name="net">Net to train.</param>
         /// <param name="epochCount">Number of epochs to train for.</param>
         /// <returns>Sum of the square of the errors (SSE).</returns>
-        public double Train(Net net, int epochCount = 1000)
+        public BackPropagationResult<Net> Train(Net net, int epochCount = 1000)
         {
-            var deltas = new Dictionary<Node, double>();
-            foreach (var nodeLayer in net.NodeLayers)
-            {
-                foreach(var node in nodeLayer.Nodes)
-                {
-                    deltas.Add(node, 0.0);
-                }
-            }
-
+            var epochNet = net;
             for (int i = 0; i < epochCount; i++)
             {
                 foreach (var dataSet in DataSets)
                 {
+                    var deltas = new Dictionary<SerialisedNode, double>();
+                    foreach (var nodeLayer in net.NodeLayers)
+                    {
+                        foreach (var node in nodeLayer.Nodes)
+                        {
+                            deltas.Add(node.CreateSerialisedNode(), 0.0);
+                        }
+                    }
+
                     double error = 0;
-                    var results = net.Calculate(dataSet.Inputs, dataSet.Outputs, ref error);
+                    var results = epochNet.Calculate(dataSet.Inputs, dataSet.Outputs, ref error);
 
                     // set delta of output nodes
                     for(int r = 0; r < results.Length; r++)
                     {
                         double delta = (dataSet.Outputs[r] - results[r]) * results[r] * (1 - results[r]);
-                        deltas[net.NodeLayers.Last().Nodes[r]] = delta;
+                        deltas[epochNet.NodeLayers.Last().Nodes[r].CreateSerialisedNode()] = delta;
                     }
 
-                    for(int l = net.NodeLayers.Length - 2; l >= 0; l--)
+                    for(int l = epochNet.NodeLayers.Count - 2; l >= 0; l--)
                     {
-                        for(int l2 = 0; l2 < net.NodeLayers[l].Nodes.Length; l2++)
+                        for(int l2 = 0; l2 < epochNet.NodeLayers[l].Nodes.Count; l2++)
                         {
-                            var node = net.NodeLayers[l].Nodes[l2];
+                            var node = epochNet.NodeLayers[l].Nodes[l2];
                             double delta = 0;
-                            foreach(var linkedNode in net.NodeLayers[l+1].Nodes)
+                            foreach(var linkedNode in epochNet.NodeLayers[l+1].Nodes)
                             {
                                 // add delta * weight of that node
-                                delta += node.Result * (1 - node.Result) * linkedNode.Weights[l2] * deltas[linkedNode];
+                                delta += node.Result * (1 - node.Result) * linkedNode.Weights[l2] * deltas[linkedNode.CreateSerialisedNode()];
                                 
                             }
                             // save delta for other nodes
-                            deltas[node] = delta;
-
+                            deltas[node.CreateSerialisedNode()] = delta;
                         }
                     }
-                    foreach (var delta in deltas)
+
+                    var nodes = epochNet.Nodes.ToArray();
+
+                    var serialNet = epochNet.CreateSerialisedNet();
+                    foreach(var serialLayer in serialNet.NodeLayers)
                     {
-                        AdjustNode(delta.Key, dataSet.Inputs, delta.Value);
+                        foreach(var serialNode in serialLayer.Nodes)
+                        {
+                            var delta = deltas[serialNode];
+                            var node = serialNode.CreateNode();
+                            var newNode = AdjustNode(node, dataSet.Inputs, delta);
+
+                            serialNode.Bias = newNode.Bias;
+                            for(int wI = 0; wI < serialNode.Weights.Length; wI++)
+                            {
+                                serialNode.Weights[wI] = newNode.Weights[wI];
+                            }
+                        }
                     }
+
+                    epochNet = serialNet.CreateNet();
                 }
             }
 
@@ -229,10 +257,11 @@ namespace RichTea.NeuralNetLib
             foreach (var dataSet in DataSets)
             {
                 double error = 0;
-                var result = net.Calculate(dataSet.Inputs, dataSet.Outputs, ref error);
+                var result = epochNet.Calculate(dataSet.Inputs, dataSet.Outputs, ref error);
                 SSE += error;
             }
-            return SSE;
+            var backPropagationResult = new BackPropagationResult<Net>(epochNet, SSE);
+            return backPropagationResult;
         }
 
     }
