@@ -29,6 +29,13 @@ namespace RichTea.NeuralNetLib.Resizers
         /// </summary>
         public RandomInputResizer() : this(new Random()) { }
 
+        /// <summary>
+        /// Resizes inputs by crreating new weights. This will also expand hidden layers so all layers (except the output)
+        /// so there are as many nodes as inputs.
+        /// </summary>
+        /// <param name="net">Source net.</param>
+        /// <param name="inputNumber">Number of inputs the net should have.</param>
+        /// <returns>Net</returns>
         public Net ResizeInputs(Net net, int inputNumber)
         {
             var serialNet = net.CreateSerialisedNet();
@@ -39,7 +46,7 @@ namespace RichTea.NeuralNetLib.Resizers
             foreach (var layer in serialNet.NodeLayers)
             {
                 var newNodes = new List<SerialisedNode>();
-                foreach (var node in layer.Nodes)
+                foreach (var node in layer.Nodes.Take(layerInputs))
                 {
                     var weights = new List<double>();
                     while (weights.Count < layerInputs)
@@ -63,7 +70,18 @@ namespace RichTea.NeuralNetLib.Resizers
                     };
 
                     newNodes.Add(newNode);
+                }
 
+                // create new codes to match inputs except for output layer
+                if (newNodes.Count < layerInputs && layer != serialNet.NodeLayers.Last())
+                {
+                    var extraNodes = Enumerable.Range(0, layerInputs - newNodes.Count).Select(i => new Node(layerInputs)).ToList();
+                    foreach(var extraNode in extraNodes)
+                    {
+                        extraNode.SeedWeights(_random);
+                    }
+
+                    newNodes.AddRange(extraNodes.Select(n => n.CreateSerialisedNode()));
                 }
 
                 var newLayer = new SerialisedNodeLayer()
