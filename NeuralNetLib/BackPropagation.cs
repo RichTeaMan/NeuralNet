@@ -88,11 +88,10 @@ namespace RichTea.NeuralNetLib
         }
         
         /// <summary>
-        /// Trains the node for the given number of epochs. The node is modified. The SSE is returned.
+        /// Trains the node for the given number of epochs. A new node is returned in the result.
         /// </summary>
         /// <param name="node">Node to train.</param>
         /// <param name="epochCount">Number of epochs to train for.</param>
-        /// <returns>Sum of the square of the errors (SSE).</returns>
         public BackPropagationResult<Node> Train(Node node, int epochCount = 1000)
         {
             if (epochCount < 1)
@@ -132,11 +131,10 @@ namespace RichTea.NeuralNetLib
         }
 
         /// <summary>
-        /// Trains the node layer for the given number of epochs. The node layer is modified. The SSE is returned.
+        /// Trains the node layer for the given number of epochs. A new node layer is returned in the result.
         /// </summary>
         /// <param name="nodeLayer">Node layer to train.</param>
         /// <param name="epochCount">Number of epochs to train for.</param>
-        /// <returns>Sum of the square of the errors (SSE).</returns>
         public BackPropagationResult<NodeLayer> Train(NodeLayer nodeLayer, int epochCount = 1000)
         {
             if (epochCount < 1)
@@ -182,7 +180,7 @@ namespace RichTea.NeuralNetLib
         }
 
         /// <summary>
-        /// Trains net for the given number of epochs. The net is modified. The SSE is returned.
+        /// Trains net for the given number of epochs. A new net is returned in the result.
         /// </summary>
         /// <param name="net">Net to train.</param>
         /// <param name="epochCount">Number of epochs to train for.</param>

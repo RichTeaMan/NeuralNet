@@ -22,7 +22,7 @@ This project uses [Cake](https://cakebuild.net)!
 Neural Net Lib supports back propagation:
 
 ``` csharp
-Net net = new Net(2, 1);
+Net net = new Net(new Random(), 2, 1);
 
 BackPropagation prop = new BackPropagation(2, 1);
 DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -36,9 +36,9 @@ prop.AddDataSet(_3);
 prop.AddDataSet(_4);
 
 int epoch = 1000;
-double SSE = prop.Train(net, epoch);
+var backPropResult = prop.Train(net, epoch);
 
-Assert.IsTrue(SSE < 0.2, "LogicNetXOR SSE after {0} epochs is '{1}'", epoch, SSE);
+Assert.IsTrue(backPropResult.SSE < 0.2, "LogicNetXOR SSE after {0} epochs is '{1}'", epoch, backPropResult.SSE);
 ```
 
 Genetic training is also a thing:
