@@ -194,7 +194,7 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void LogicNetXOR()
         {
-            Net Net = new Net(new Random(), 2, 1);
+            Net Net = new Net(new Random(5), 2, 1);
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
