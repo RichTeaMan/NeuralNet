@@ -82,6 +82,7 @@ namespace RichTea.NeuralNetLib
         /// <summary>
         /// Initialises net.
         /// </summary>
+        /// <param name="random">Random.</param>
         /// <param name="inputCount">Input count.</param>
         /// <param name="outputCount">Output count.</param>
         /// <param name="layerCount">Layer count.</param>

@@ -41,6 +41,7 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         /// <param name="inputCount">Input count.</param>
         /// <param name="outputCount">Output count.</param>
+        /// <param name="random">Random.</param>
         public NodeLayer(int inputCount, int outputCount, Random random)
         {
             if (inputCount == 0)

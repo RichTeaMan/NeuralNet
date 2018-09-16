@@ -48,6 +48,7 @@ namespace RichTea.NeuralNetLib
         /// Constructs the node with random values for the weights and bias.
         /// </summary>
         /// <param name="inputs">The number of inputs the Node should have.</param>
+        /// <param name="random">Random.</param>
         public Node(int inputs, Random random)
         {
             if (inputs == 0)
