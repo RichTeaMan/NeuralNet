@@ -4,6 +4,7 @@
 # Cake related
 tools/
 !tools/packages.config
+.dotnet/
 
 # User-specific files
 *.suo
@@ -263,3 +264,4 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
