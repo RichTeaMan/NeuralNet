@@ -2,6 +2,8 @@
 
 #addin "nuget:https://api.nuget.org/v3/index.json?package=Cake.Coveralls"
 #tool "nuget:https://api.nuget.org/v3/index.json?package=coveralls.io&version=1.3.4"
+#tool "nuget:https://api.nuget.org/v3/index.json?package=OpenCover&version=4.6.519"
+#tool "nuget:https://api.nuget.org/v3/index.json?package=ReportGenerator&version=2.4.5"
 
 #tool nuget:?package=vswhere
 
