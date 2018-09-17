@@ -5,6 +5,7 @@
 tools/
 !tools/packages.config
 .dotnet/
+NeuralNetLib.Test/coverage.opencover.xml
 
 # User-specific files
 *.suo
