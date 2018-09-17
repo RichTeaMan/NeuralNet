@@ -1,8 +1,9 @@
 #addin "Cake.Incubator"
-#addin Cake.Coveralls
+
+#addin "nuget:https://api.nuget.org/v3/index.json?package=Cake.Coveralls"
+#tool "nuget:https://api.nuget.org/v3/index.json?package=coveralls.io&version=1.3.4"
 
 #tool nuget:?package=vswhere
-#tool coveralls.io
 
 
 //////////////////////////////////////////////////////////////////////
@@ -11,6 +12,7 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+var coverallsToken = Argument("coverallsToken", string.Empty);
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
@@ -43,13 +45,31 @@ Task("Build")
     Verbosity = DotNetCoreVerbosity.Minimal,
     Configuration = configuration
     });
+
 });
 
 Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    DotNetCoreTest("NeuralNetLib.Test/NeuralNetLib.Test.csproj");
+     var settings = new DotNetCoreTestSettings
+     {
+         Configuration = configuration,
+        ArgumentCustomization = args=>args.Append("/p:CollectCoverage=true /p:CoverletOutputFormat=opencover")
+     };
+    DotNetCoreTest("NeuralNetLib.Test/NeuralNetLib.Test.csproj", settings);
+
+});
+
+Task("Appveyor")
+    .IsDependentOn("Test")
+    .Does(() =>
+{
+    CoverallsIo("NeuralNetLib.Test/coverage.opencover.xml", new CoverallsIoSettings()
+    {
+        RepoToken = coverallsToken
+    });
+
 });
 
 //////////////////////////////////////////////////////////////////////
