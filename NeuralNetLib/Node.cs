@@ -51,7 +51,7 @@ namespace RichTea.NeuralNetLib
         /// <param name="random">Random.</param>
         public Node(int inputs, Random random)
         {
-            if (inputs == 0)
+            if (inputs <= 0)
             {
                 throw new ArgumentException("A Node must have at least one input");
             }
