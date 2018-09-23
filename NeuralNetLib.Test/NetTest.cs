@@ -1,39 +1,40 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
 namespace RichTea.NeuralNetLib.Test
 {
     [TestClass]
-    public class NodeLayerTest
+    public class NetTest
     {
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void IncorrectInputTest()
         {
-            var nodeLayer = new NodeLayer(-2, 2, new Random());
+            var net = new Net(new Random(), -2, 2);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void IncorrectOutputTest()
         {
-            var nodeLayer = new NodeLayer(2, -2, new Random());
+            var net = new Net(new Random(), 2, -2);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void IncorrectInputCalculationTest()
         {
-            var nodeLayer = new NodeLayer(5, 5, new Random());
+            var net = new Net(new Random(), 5, 5);
 
-            nodeLayer.Calculate(new double[2]);
+            net.Calculate(new double[2]);
         }
 
         [TestMethod]
-        public void NodeLayerToStringTest()
+        public void NetToStringTest()
         {
-            var nodeLayer = new NodeLayer(5, 5, new Random());
-            nodeLayer.ToString();
+            var net = new Net(new Random(), 5, 5);
+            net.ToString();
         }
     }
 }
