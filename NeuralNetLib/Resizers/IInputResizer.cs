@@ -6,7 +6,7 @@
     interface IInputResizer
     {
         /// <summary>
-        /// Creates a new net from the given net with the new nmber of inputs.
+        /// Creates a new net from the given net with the new number of inputs.
         /// </summary>
         /// <param name="net">Source net.</param>
         /// <param name="inputNumber">Number of inputs the new net should have.</param>

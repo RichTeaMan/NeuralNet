@@ -30,7 +30,7 @@ namespace RichTea.NeuralNetLib.Resizers
         public RandomInputResizer() : this(new Random()) { }
 
         /// <summary>
-        /// Resizes inputs by crreating new weights. This will also expand hidden layers so all layers (except the output)
+        /// Resizes inputs by creating new weights. This will also expand hidden layers so all layers (except the output)
         /// so there are as many nodes as inputs.
         /// </summary>
         /// <param name="net">Source net.</param>
