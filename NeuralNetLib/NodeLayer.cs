@@ -44,12 +44,12 @@ namespace RichTea.NeuralNetLib
         /// <param name="random">Random.</param>
         public NodeLayer(int inputCount, int outputCount, Random random)
         {
-            if (inputCount == 0)
+            if (inputCount <= 0)
             {
                 throw new ArgumentException("A NodeLayer must have at least one input");
             }
 
-            if (outputCount == 0)
+            if (outputCount <= 0)
             {
                 throw new ArgumentException("A NodeLayer must have at least one output");
             }
