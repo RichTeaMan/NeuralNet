@@ -1,4 +1,5 @@
 ﻿using RichTea.Common;
+using System;
 using System.Linq;
 
 namespace RichTea.NeuralNetLib.Serialisation
@@ -8,6 +9,8 @@ namespace RichTea.NeuralNetLib.Serialisation
     /// </summary>
     public class SerialisedNode
     {
+        public NodeType NodeType { get; set; }
+
         /// <summary>
         /// Gets or sets bias.
         /// </summary>
@@ -24,8 +27,15 @@ namespace RichTea.NeuralNetLib.Serialisation
         /// <returns></returns>
         public Node CreateNode()
         {
-            var node = new SigmoidNode(Bias, Weights);
-            return node;
+            switch (NodeType)
+            {
+                case NodeType.Sigmoid:
+                    return new SigmoidNode(Bias, Weights);
+                case NodeType.Relu:
+                    return new ReluNode(Bias, Weights);
+                default:
+                    throw new Exception($"Unknown node type: {NodeType}");
+            }
         }
 
         /// <summary>
@@ -35,6 +45,7 @@ namespace RichTea.NeuralNetLib.Serialisation
         public override string ToString()
         {
             return new ToStringBuilder<SerialisedNode>(this)
+                .Append(p => p.NodeType)
                 .Append(p => p.Bias)
                 .Append(p => p.Weights)
                 .ToString();
@@ -48,6 +59,7 @@ namespace RichTea.NeuralNetLib.Serialisation
         public override bool Equals(object that)
         {
             return new EqualsBuilder<SerialisedNode>(this, that)
+                .Append(p => p.NodeType)
                 .Append(p => p.Bias)
                 .Append(p => p.Weights)
                 .AreEqual;
@@ -60,6 +72,7 @@ namespace RichTea.NeuralNetLib.Serialisation
         public override int GetHashCode()
         {
             var hash = new HashCodeBuilder()
+                .Append(NodeType)
                 .Append(Bias)
                 .Append(Weights)
                 .HashCode;

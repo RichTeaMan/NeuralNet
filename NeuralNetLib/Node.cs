@@ -14,6 +14,8 @@ namespace RichTea.NeuralNetLib
     {
         #region Properties
 
+        public abstract NodeType NodeType { get; }
+
         /// <summary>
         /// Gets input count.
         /// </summary>
@@ -56,8 +58,8 @@ namespace RichTea.NeuralNetLib
                 throw new ArgumentException("A Node must have at least one input");
             }
 
-            Bias = random.NextDouble();
-            Weights = Enumerable.Range(0, inputs).Select(i => random.NextDouble()).ToArray();
+            Bias = 0.1; // random.NextDouble();
+            Weights = Enumerable.Range(0, inputs).Select(i => random.NextDouble() / 10).ToArray();
         }
 
         /// <summary>
@@ -96,7 +98,25 @@ namespace RichTea.NeuralNetLib
         /// <param name="target">Target.</param>
         /// <param name="delta">Delta.</param>
         /// <returns>Result.</returns>
-        public abstract double Calculate(double[] inputs, double target, ref double delta);
+        public virtual double Calculate(double[] inputs, double target, ref double delta)
+        {
+            double result = Calculate(inputs);
+            delta = (target - result) * CalculateDerivative(inputs);
+            return result;
+        }
+
+        /// <summary>
+        /// Calculate.
+        /// </summary>
+        /// <param name="inputs">Inputs.</param>
+        /// <returns>Result.</returns>
+        public virtual double CalculateDerivative(double[] inputs)
+        {
+            double result = Calculate(inputs);
+            return CalculateDerivative(result);
+        }
+
+        public abstract double CalculateDerivative(double input);
 
         /// <summary>
         /// Creates node for serialisation.
@@ -126,6 +146,6 @@ namespace RichTea.NeuralNetLib
                 .Append(p => p.Weights)
                 .ToString();
         }
-        
+
     }
 }

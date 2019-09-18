@@ -86,7 +86,7 @@ namespace RichTea.NeuralNetLib
 
             return serialNode.CreateNode();
         }
-        
+
         /// <summary>
         /// Trains the node for the given number of epochs. A new node is returned in the result.
         /// </summary>
@@ -113,10 +113,10 @@ namespace RichTea.NeuralNetLib
                 {
                     double delta = 0;
                     double result = epochNode.Calculate(dataSet.Inputs, dataSet.Outputs.First(), ref delta);
-                    
+
                     // weight delta = learning rate * error * weight
                     epochNode = AdjustNode(epochNode, dataSet.Inputs, LearningRate * delta);
-                    
+
                 }
             }
 
@@ -154,7 +154,7 @@ namespace RichTea.NeuralNetLib
             {
                 for (int n = 0; n < epochNodeLayer.OutputCount; n++)
                 {
-                    foreach(var dataSet in DataSets)
+                    foreach (var dataSet in DataSets)
                     {
                         double error = 0;
                         epochNodeLayer.Nodes[n].Calculate(dataSet.Inputs, dataSet.Outputs[n], ref error);
@@ -203,25 +203,26 @@ namespace RichTea.NeuralNetLib
 
                     double error = 0;
                     var results = epochNet.Calculate(dataSet.Inputs, dataSet.Outputs, ref error);
+                    var outputNodes = epochNet.NodeLayers.Last();
 
                     // set delta of output nodes
-                    for(int r = 0; r < results.Length; r++)
+                    for (int r = 0; r < results.Length; r++)
                     {
-                        double delta = (dataSet.Outputs[r] - results[r]) * results[r] * (1 - results[r]);
+                        var outputNode = outputNodes.Nodes[r];
+                        double delta = (dataSet.Outputs[r] - results[r]) * outputNode.CalculateDerivative(results[r]);
                         deltas[epochNet.NodeLayers.Last().Nodes[r].CreateSerialisedNode()] = delta;
                     }
 
-                    for(int l = epochNet.NodeLayers.Count - 2; l >= 0; l--)
+                    for (int l = epochNet.NodeLayers.Count - 2; l >= 0; l--)
                     {
-                        for(int l2 = 0; l2 < epochNet.NodeLayers[l].Nodes.Count; l2++)
+                        for (int l2 = 0; l2 < epochNet.NodeLayers[l].Nodes.Count; l2++)
                         {
                             var node = epochNet.NodeLayers[l].Nodes[l2];
                             double delta = 0;
-                            foreach(var linkedNode in epochNet.NodeLayers[l+1].Nodes)
+                            foreach (var linkedNode in epochNet.NodeLayers[l + 1].Nodes)
                             {
                                 // add delta * weight of that node
-                                delta += node.Result * (1 - node.Result) * linkedNode.Weights[l2] * deltas[linkedNode.CreateSerialisedNode()];
-                                
+                                delta += node.CalculateDerivative(node.Result) * linkedNode.Weights[l2] * deltas[linkedNode.CreateSerialisedNode()];
                             }
                             // save delta for other nodes
                             deltas[node.CreateSerialisedNode()] = delta;
@@ -231,16 +232,16 @@ namespace RichTea.NeuralNetLib
                     var nodes = epochNet.Nodes.ToArray();
 
                     var serialNet = epochNet.CreateSerialisedNet();
-                    foreach(var serialLayer in serialNet.NodeLayers)
+                    foreach (var serialLayer in serialNet.NodeLayers)
                     {
-                        foreach(var serialNode in serialLayer.Nodes)
+                        foreach (var serialNode in serialLayer.Nodes)
                         {
                             var delta = deltas[serialNode];
                             var node = serialNode.CreateNode();
                             var newNode = AdjustNode(node, dataSet.Inputs, delta);
 
                             serialNode.Bias = newNode.Bias;
-                            for(int wI = 0; wI < serialNode.Weights.Length; wI++)
+                            for (int wI = 0; wI < serialNode.Weights.Length; wI++)
                             {
                                 serialNode.Weights[wI] = newNode.Weights[wI];
                             }

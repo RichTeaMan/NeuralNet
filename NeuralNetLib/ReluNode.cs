@@ -62,16 +62,8 @@ namespace RichTea.NeuralNetLib
             return Result;
         }
 
-        /// <summary>
-        /// Calculate.
-        /// </summary>
-        /// <param name="inputs">Inputs.</param>
-        /// <param name="target">Target.</param>
-        /// <param name="delta">Delta.</param>
-        /// <returns>Result.</returns>
-        public override double CalculateDerivative(double[] inputs)
+        public override double CalculateDerivative(double result)
         {
-            double result = Calculate(inputs);
             int derivative = 0;
             if (result >= 0)
             {
@@ -79,16 +71,5 @@ namespace RichTea.NeuralNetLib
             }
             return derivative;
         }
-
-        public override double LastDerivative()
-        {
-            int derivative = 0;
-            if (Result >= 0)
-            {
-                derivative = 1;
-            }
-            return derivative;
-        }
-
     }
 }

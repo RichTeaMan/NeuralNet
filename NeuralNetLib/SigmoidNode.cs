@@ -12,6 +12,7 @@ namespace RichTea.NeuralNetLib
     /// </summary>
     public class SigmoidNode : Node
     {
+        public override NodeType NodeType => NodeType.Sigmoid;
 
         /// <summary>
         /// Constructs the node with random values for the weights and bias.
@@ -54,19 +55,9 @@ namespace RichTea.NeuralNetLib
             return Result;
         }
 
-        /// <summary>
-        /// Calculate.
-        /// </summary>
-        /// <param name="inputs">Inputs.</param>
-        /// <param name="target">Target.</param>
-        /// <param name="delta">Delta.</param>
-        /// <returns>Result.</returns>
-        public override double Calculate(double[] inputs, double target, ref double delta)
+        public override double CalculateDerivative(double result)
         {
-            double result = Calculate(inputs);
-            delta = (target - result) * result * (1 - result);
-            return result;
+            return result * (1 - result);
         }
-        
     }
 }

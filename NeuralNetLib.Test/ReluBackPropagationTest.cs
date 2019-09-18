@@ -106,6 +106,29 @@ namespace RichTea.NeuralNetLib.Test
         }
 
         [TestMethod]
+        public void LogicNodeLayerXOR()
+        {
+            var nodes = Enumerable.Range(0, 1).Select(n => new ReluNode(2, new Random())).ToList();
+            var NodeLayer = new NodeLayer(nodes);
+
+            BackPropagation prop = new BackPropagation(2, 1);
+            DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
+            DataSet _2 = new DataSet(new double[] { 0, 1 }, new double[] { 1 });    // 0 | 1 = 1
+            DataSet _3 = new DataSet(new double[] { 1, 0 }, new double[] { 1 });    // 1 | 0 = 1
+            DataSet _4 = new DataSet(new double[] { 1, 1 }, new double[] { 0 });    // 1 | 1 = 0
+
+            prop.AddDataSet(_1);
+            prop.AddDataSet(_2);
+            prop.AddDataSet(_3);
+            prop.AddDataSet(_4);
+
+            int epoch = 1000;
+            var backPropResult = prop.Train(NodeLayer, epoch);
+
+            Assert.IsTrue(backPropResult.SSE < 0.2, "LogicNodeOR SSE after {0} epochs is '{1}'", epoch, backPropResult.SSE);
+        }
+
+        [TestMethod]
         public void LogicNodeLayerAND()
         {
             var nodes = Enumerable.Range(0, 1).Select(n => new ReluNode(2, new Random())).ToList();
@@ -211,7 +234,7 @@ namespace RichTea.NeuralNetLib.Test
             prop.AddDataSet(_3);
             prop.AddDataSet(_4);
 
-            int epoch = 1000;
+            int epoch = 5000;
             var backPropResult = prop.Train(Net, epoch);
 
             Assert.IsTrue(backPropResult.SSE < 0.2, "LogicNetXOR SSE after {0} epochs is '{1}'", epoch, backPropResult.SSE);
