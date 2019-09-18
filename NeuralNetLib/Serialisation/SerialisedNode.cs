@@ -29,6 +29,8 @@ namespace RichTea.NeuralNetLib.Serialisation
         {
             switch (NodeType)
             {
+                case NodeType.HyperbolicTangent:
+                    return new HyperbolicTangentNode(Bias, Weights);
                 case NodeType.Sigmoid:
                     return new SigmoidNode(Bias, Weights);
                 case NodeType.Relu:

@@ -8,6 +8,8 @@ namespace RichTea.NeuralNetLib
     {
         Sigmoid,
 
-        Relu
+        Relu,
+
+        HyperbolicTangent
     }
 }

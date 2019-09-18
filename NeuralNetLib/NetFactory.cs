@@ -36,6 +36,24 @@ namespace RichTea.NeuralNetLib
             return net;
         }
 
+        public Net GenerateRandomHyperbolicTangentNet(int inputCount, int outputCount, int hiddenLayers, Random random)
+        {
+            var layers = new List<NodeLayer>();
+            foreach (var i in Enumerable.Range(0, hiddenLayers + 1))
+            {
+                var nodes = Enumerable.Range(0, inputCount).Select(n => new HyperbolicTangentNode(inputCount, random)).ToList();
+                var layer = new NodeLayer(nodes);
+                layers.Add(layer);
+            }
+            var outputNodes = Enumerable.Range(0, outputCount).Select(n => new HyperbolicTangentNode(inputCount, random)).ToList();
+            var outputLayer = new NodeLayer(outputNodes);
+            layers.Add(outputLayer);
+
+
+            var net = new Net(layers);
+            return net;
+        }
+
         /// <summary>
         /// Generates a random net.
         /// </summary>
