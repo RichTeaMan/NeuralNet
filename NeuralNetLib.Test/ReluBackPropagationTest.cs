@@ -234,7 +234,7 @@ namespace RichTea.NeuralNetLib.Test
             prop.AddDataSet(_3);
             prop.AddDataSet(_4);
 
-            int epoch = 5000;
+            int epoch = 4000;
             var backPropResult = prop.Train(Net, epoch);
 
             Assert.IsTrue(backPropResult.SSE < 0.2, "LogicNetXOR SSE after {0} epochs is '{1}'", epoch, backPropResult.SSE);

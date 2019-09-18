@@ -58,7 +58,7 @@ namespace RichTea.NeuralNetLib
                 throw new ArgumentException("A Node must have at least one input");
             }
 
-            Bias = 0.1; // random.NextDouble();
+            Bias = random.NextDouble() / 10;
             Weights = Enumerable.Range(0, inputs).Select(i => random.NextDouble() / 10).ToArray();
         }
 
