@@ -4,12 +4,12 @@ using System;
 namespace RichTea.NeuralNetLib.Test
 {
     [TestClass]
-    public class BackPropagationTest
+    public class SigmoidBackPropagationTest
     {
         [TestMethod]
         public void LogicNodeOR()
         {
-            Node node = new Node(2, new Random());
+            Node node = new SigmoidNode(2, new Random());
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -40,7 +40,7 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void LogicNodeAND()
         {
-            Node node = new Node(2, new Random());
+            Node node = new SigmoidNode(2, new Random());
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0
@@ -62,7 +62,7 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void LogicNodeXOR()
         {
-            Node node = new Node(2, new Random());
+            Node node = new SigmoidNode(2, new Random());
 
             BackPropagation prop = new BackPropagation(2, 1);
             DataSet _1 = new DataSet(new double[] { 0, 0 }, new double[] { 0 });    // 0 | 0 = 0

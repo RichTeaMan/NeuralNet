@@ -10,7 +10,7 @@ namespace RichTea.NeuralNetLib
     /// <summary>
     /// A neural node.
     /// </summary>
-    public class Node
+    public abstract class Node
     {
         #region Properties
 
@@ -38,7 +38,7 @@ namespace RichTea.NeuralNetLib
         /// <summary>
         /// Gets the result of the last calculation.
         /// </summary>
-        public double Result { get; private set; }
+        public double Result { get; protected set; }
 
         #endregion
 
@@ -65,7 +65,7 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         ///<param name="bias">Bias.</param>
         ///<param name="weights">Weights.</param>
-        public Node(double bias, IEnumerable<double> weights)
+        protected Node(double bias, IEnumerable<double> weights)
         {
             Bias = bias;
             Weights = weights.ToArray();
@@ -75,7 +75,7 @@ namespace RichTea.NeuralNetLib
         /// Clones another node
         /// </summary>
         /// <param name="node">Node.</param>
-        public Node(Node node)
+        protected Node(Node node)
         {
             Bias = node.Bias;
             // ToArray() to ensure the same array instance is not reused.
@@ -87,21 +87,7 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         /// <param name="inputs">Inputs.</param>
         /// <returns>Result.</returns>
-        public double Calculate(double[] inputs)
-        {
-            if (InputCount != inputs.Length)
-            {
-                throw new ArgumentException("There is not a correct number of inputs.");
-            }
-
-            double result = Bias;
-            for (int i = 0; i < this.InputCount; i++)
-            {
-                result += inputs[i] * Weights[i];
-            }
-            Result = 1.0 / (1.0 + Math.Exp(-result));
-            return Result;
-        }
+        public abstract double Calculate(double[] inputs);
 
         /// <summary>
         /// Calculate.
@@ -110,12 +96,7 @@ namespace RichTea.NeuralNetLib
         /// <param name="target">Target.</param>
         /// <param name="delta">Delta.</param>
         /// <returns>Result.</returns>
-        public double Calculate(double[] inputs, double target, ref double delta)
-        {
-            double result = Calculate(inputs);
-            delta = (target - result) * result * (1 - result);
-            return result;
-        }
+        public abstract double Calculate(double[] inputs, double target, ref double delta);
 
         /// <summary>
         /// Creates node for serialisation.

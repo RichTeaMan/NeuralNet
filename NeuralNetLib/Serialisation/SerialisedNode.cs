@@ -24,7 +24,7 @@ namespace RichTea.NeuralNetLib.Serialisation
         /// <returns></returns>
         public Node CreateNode()
         {
-            var node = new Node(Bias, Weights);
+            var node = new SigmoidNode(Bias, Weights);
             return node;
         }
 

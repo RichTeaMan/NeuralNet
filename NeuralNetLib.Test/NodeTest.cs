@@ -10,14 +10,14 @@ namespace RichTea.NeuralNetLib.Test
         [ExpectedException(typeof(ArgumentException))]
         public void IncorrectInputTest()
         {
-            var node = new Node(-2, new Random());
+            var node = new SigmoidNode(-2, new Random());
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void IncorrectInputCalculationTest()
         {
-            var node = new Node(5, new Random());
+            var node = new SigmoidNode(5, new Random());
 
             node.Calculate(new double[2]);
         }
@@ -25,7 +25,7 @@ namespace RichTea.NeuralNetLib.Test
         [TestMethod]
         public void NodeToStringTest()
         {
-            var node = new Node(5, new Random());
+            var node = new SigmoidNode(5, new Random());
             node.ToString();
         }
     }

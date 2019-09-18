@@ -56,7 +56,7 @@ namespace RichTea.NeuralNetLib
 
             InputCount = inputCount;
 
-            Nodes = Enumerable.Range(0, outputCount).Select(i => new Node(inputCount, random)).ToList();
+            Nodes = Enumerable.Range(0, outputCount).Select(i => new SigmoidNode(inputCount, random)).ToList();
         }
 
         /// <summary>

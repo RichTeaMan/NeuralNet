@@ -14,8 +14,8 @@ namespace RichTea.NeuralNetLib.Test
         {
             var randA = new Random(5);
             var randB = new Random(5);
-            var a = new Node(3, randA);
-            var b = new Node(3, randB);
+            var a = new SigmoidNode(3, randA);
+            var b = new SigmoidNode(3, randB);
 
             Assert.AreEqual(a.CreateSerialisedNode(), b.CreateSerialisedNode());
         }
@@ -25,8 +25,8 @@ namespace RichTea.NeuralNetLib.Test
         {
             var randA = new Random(5);
             var randB = new Random(5);
-            var a = new Node(3, randA);
-            var b = new Node(2, randB);
+            var a = new SigmoidNode(3, randA);
+            var b = new SigmoidNode(2, randB);
 
             Assert.AreNotEqual(a.CreateSerialisedNode(), b.CreateSerialisedNode());
         }
@@ -37,8 +37,8 @@ namespace RichTea.NeuralNetLib.Test
 
             var randA = new Random(5);
             var randB = new Random(5);
-            var a = new Node(3,randA);
-            var b = new Node(3,randB);
+            var a = new SigmoidNode(3,randA);
+            var b = new SigmoidNode(3,randB);
 
             Assert.AreEqual(a.CreateSerialisedNode(), b.CreateSerialisedNode());
 
@@ -51,8 +51,8 @@ namespace RichTea.NeuralNetLib.Test
         public void SeededNodeNotEqualsTest()
         {
             var rand = new Random(5);
-            var a = new Node(3, rand);
-            var b = new Node(3, rand);
+            var a = new SigmoidNode(3, rand);
+            var b = new SigmoidNode(3, rand);
 
             Assert.AreNotEqual(a.CreateSerialisedNode(), b.CreateSerialisedNode());
         }
