@@ -10,6 +10,31 @@ namespace RichTea.NeuralNetLib
     /// </summary>
     public class NetFactory
     {
+        /// <summary>
+        /// Generates a random net.
+        /// </summary>
+        /// <param name="inputCount">Input count.</param>
+        /// <param name="outputCount">Output count.</param>
+        /// <param name="hiddenLayers">Hidden layers.</param>
+        /// <param name="random">Random.</param>
+        /// <returns>Net.</returns>
+        public Net GenerateRandomReluNet(int inputCount, int outputCount, int hiddenLayers, Random random)
+        {
+            var layers = new List<NodeLayer>();
+            foreach (var i in Enumerable.Range(0, hiddenLayers + 1))
+            {
+                var nodes = Enumerable.Range(0, inputCount).Select(n => new ReluNode(inputCount, random)).ToList();
+                var layer = new NodeLayer(nodes);
+                layers.Add(layer);
+            }
+            var outputNodes = Enumerable.Range(0, outputCount).Select(n => new ReluNode(inputCount, random)).ToList();
+            var outputLayer = new NodeLayer(outputNodes);
+            layers.Add(outputLayer);
+
+
+            var net = new Net(layers);
+            return net;
+        }
 
         /// <summary>
         /// Generates a random net.
@@ -64,7 +89,7 @@ namespace RichTea.NeuralNetLib
         public List<Net> GenerateRandomNetList(int inputCount, int outputCount, int hiddenLayers, Random random, int netCount)
         {
             List<Net> netList = new List<Net>();
-            foreach(var i in Enumerable.Range(0, netCount))
+            foreach (var i in Enumerable.Range(0, netCount))
             {
                 Net net = GenerateRandomNet(inputCount, outputCount, hiddenLayers, random);
                 netList.Add(net);
@@ -86,12 +111,12 @@ namespace RichTea.NeuralNetLib
         {
             var serialisedNet = net.CreateSerialisedNet();
 
-            foreach(var nodeLayer in serialisedNet.NodeLayers)
+            foreach (var nodeLayer in serialisedNet.NodeLayers)
             {
-                foreach(var node in nodeLayer.Nodes)
+                foreach (var node in nodeLayer.Nodes)
                 {
                     node.Bias += random.NextDoubleInRange(deviation);
-                    for(int i = 0; i < node.Weights.Length; i++)
+                    for (int i = 0; i < node.Weights.Length; i++)
                     {
                         node.Weights[i] += random.NextDoubleInRange(deviation);
                     }
