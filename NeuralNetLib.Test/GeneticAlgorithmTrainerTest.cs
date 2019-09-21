@@ -3,11 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RichTea.NeuralNetLib.Mutators;
-using RichTea.NeuralNetLib.Serialisation;
 
 namespace RichTea.NeuralNetLib.Test
 {
+
+    [Ignore]
     [TestClass]
     public class GeneticAlgorithmTrainerTest
     {

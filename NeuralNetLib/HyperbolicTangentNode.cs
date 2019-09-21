@@ -19,7 +19,11 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         /// <param name="inputs">The number of inputs the Node should have.</param>
         /// <param name="random">Random.</param>
-        public HyperbolicTangentNode(int inputs, Random random) : base(inputs, random) { }
+        public HyperbolicTangentNode(int inputs, Random random) : base(inputs, random)
+        {
+            Bias = 0.05;// random.NextDouble() / 1000;
+            UpdateWeights(Weights.Select(w => 0.05));// random.NextDouble() / 100));
+        }
 
         /// <summary>
         /// Initialises node from given weights and bias.
@@ -52,12 +56,35 @@ namespace RichTea.NeuralNetLib
                 result += inputs[i] * Weights[i];
             }
             Result = Math.Tanh(result);
+            if (Result > 1.0)
+            {
+                Console.WriteLine("???");
+            }
             return Result;
         }
 
         public override double CalculateDerivative(double result)
         {
-            return 1 - Math.Pow(Math.Tanh(result), 2);
+            return 1.0 - Math.Pow(Math.Tanh(result), 2);
         }
+
+        public override void UpdateBias(double updatedBias)
+        {
+            double adjusted = Limit(updatedBias);
+            base.UpdateBias(adjusted);
+        }
+
+        public override void UpdateWeights(IEnumerable<double> updatedWeights)
+        {
+            base.UpdateWeights(updatedWeights.Select(w => Limit(w)));
+        }
+
+        private static double Limit(double updatedBias)
+        {
+            double adjusted = Math.Min(1.0, updatedBias);
+            adjusted = Math.Max(-1, adjusted);
+            return adjusted;
+        }
+
     }
 }

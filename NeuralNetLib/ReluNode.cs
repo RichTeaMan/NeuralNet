@@ -19,7 +19,10 @@ namespace RichTea.NeuralNetLib
         /// </summary>
         /// <param name="inputs">The number of inputs the Node should have.</param>
         /// <param name="random">Random.</param>
-        public ReluNode(int inputs, Random random) : base(inputs, random) { }
+        public ReluNode(int inputs, Random random) : base(inputs, random) {
+            Bias = random.NextDouble() / 1000
+;            UpdateWeights(Weights.Select(w => random.NextDouble() / 100));
+        }
 
         /// <summary>
         /// Initialises node from given weights and bias.

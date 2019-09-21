@@ -21,13 +21,14 @@ namespace RichTea.NeuralNetLib
         public Net GenerateRandomReluNet(int inputCount, int outputCount, int hiddenLayers, Random random)
         {
             var layers = new List<NodeLayer>();
+            var weights = new double[inputCount];
             foreach (var i in Enumerable.Range(0, hiddenLayers + 1))
             {
-                var nodes = Enumerable.Range(0, inputCount).Select(n => new ReluNode(inputCount, random)).ToList();
+                var nodes = Enumerable.Range(0, inputCount).Select(n => new ReluNode(0.0, weights)).ToList();
                 var layer = new NodeLayer(nodes);
                 layers.Add(layer);
             }
-            var outputNodes = Enumerable.Range(0, outputCount).Select(n => new ReluNode(inputCount, random)).ToList();
+            var outputNodes = Enumerable.Range(0, outputCount).Select(n => new ReluNode(0.0, weights)).ToList();
             var outputLayer = new NodeLayer(outputNodes);
             layers.Add(outputLayer);
 

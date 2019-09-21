@@ -30,12 +30,12 @@ namespace RichTea.NeuralNetLib
         /// <summary>
         /// Gets bias.
         /// </summary>
-        public double Bias { get; }
+        public double Bias { get; protected set; }
 
         /// <summary>
         /// Gets weights.
         /// </summary>
-        public IReadOnlyList<double> Weights { get; }
+        public IReadOnlyList<double> Weights { get; protected set; }
 
         /// <summary>
         /// Gets the result of the last calculation.
@@ -132,6 +132,20 @@ namespace RichTea.NeuralNetLib
             };
 
             return serialisedNode;
+        }
+
+        public virtual void UpdateWeights(IEnumerable<double> updatedWeights)
+        {
+            if (updatedWeights.Count() != InputCount)
+            {
+                throw new ArgumentException("Incorrect number of weights.");
+            }
+            Weights = updatedWeights.ToList();
+        }
+
+        public virtual void UpdateBias(double updatedBias)
+        {
+            Bias = updatedBias;
         }
 
         #endregion
