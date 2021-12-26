@@ -24,9 +24,9 @@ echo "Installing .NET CLI..."
 if [ ! -d "$SCRIPT_DIR/.dotnet" ]; then
   mkdir "$SCRIPT_DIR/.dotnet"
 fi
-curl -Lsfo "$SCRIPT_DIR/.dotnet/dotnet-install.sh" https://raw.githubusercontent.com/dotnet/cli/release/2.1.4xx/scripts/obtain/dotnet-install.sh
+curl -Lsfo "$SCRIPT_DIR/.dotnet/dotnet-install.sh" https://dot.net/v1/dotnet-install.sh
 chmod +x "$SCRIPT_DIR/.dotnet/dotnet-install.sh"
-"$SCRIPT_DIR/.dotnet/dotnet-install.sh" --version 2.1.401 --install-dir .dotnet --no-path
+"$SCRIPT_DIR/.dotnet/dotnet-install.sh" --channel 6.0.1xx --install-dir .dotnet --no-path
 export PATH="$SCRIPT_DIR/.dotnet":$PATH
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
